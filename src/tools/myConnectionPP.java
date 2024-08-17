@@ -623,23 +623,23 @@ public class myConnectionPP {
     return IDOrdonnance;
 }
 
-public static void addToOrdonnance(int IDOrdonnance, String  Medicament, int Quantity, String Detail) {
-    try {
+    public static void addToOrdonnance(int IDPatient, String Article, int Quantite, String Detail) {
         if (cnx == null) {
             cnx = connecterDB();
         }
-        String query = "INSERT INTO ordonnance_details (IDOrdonnance, Medicament, Quantity, Detail) VALUES (?, ?, ?, ?)";
-        PreparedStatement ps = cnx.prepareStatement(query);
-        ps.setInt(1, IDOrdonnance);
-        ps.setString(2, Medicament);
-        ps.setInt(3, Quantity);
-        ps.setString(4, Detail);
-        ps.executeUpdate();
-    } catch (SQLException ex) {
-        Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            String query = "insert into ordonnance (IDPatient,Article,Quantite,Detail) values('"
+                    + IDPatient + "','"
+                    + Article + "','"
+                    + Quantite + "','"
+                    + Detail + "' )";
+            PreparedStatement ps = cnx.prepareStatement(query);
+            ps.execute();
+            passe = 1;
+        } catch (SQLException ex) {
+            Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-}
-
 
     public static void addToExamen(int IDPatient, String Examen) {
         if (cnx == null) {

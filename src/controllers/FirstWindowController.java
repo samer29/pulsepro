@@ -15,6 +15,7 @@ import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,11 +37,14 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import tools.AlertMaker;
@@ -62,6 +66,7 @@ import static tools.myFunctionsPP.OnlyIntegersForTextField;
 import static tools.myFunctionsPP.calculateDateOfBirth;
 import static tools.myFunctionsPP.converLocalDateToString;
 import static tools.myFunctionsPP.fillTableWithConditionDESCENDING;
+import static tools.myFunctionsPP.loadWebpage;
 import static tools.myFunctionsPP.loadWindow;
 
 /**
@@ -161,13 +166,20 @@ public class FirstWindowController implements Initializable {
 
     @FXML
     private FontAwesomeIconView btnToggle;
+    @FXML
+    private StackPane PaneAbout;
+    @FXML
+    private Circle about_us_pic;
+    private static final String LINKED_IN = "https://www.linkedin.com/in/samerelouissi/";
+    private static final String FACEBOOK = "https://www.facebook.com/samer.elouissi";
+    private static final String GITHUB = "https://github.com/samer29";
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        
+
         //myConnectionPP.readfromfileandinsertintoDb();
         OnlyIntegersForTextField(txtAgeAddPati);
         txtDateConsultAddPati.setValue(LocalDate.now());
@@ -176,25 +188,28 @@ public class FirstWindowController implements Initializable {
         PanePatients.setOpacity(1);
         PaneAjouterPatient.setOpacity(0);
         PaneOrdonances.setOpacity(0);
-        rootAnchorPane.getChildren().removeAll(PanePatients, PaneAjouterPatient, PaneOrdonances);
-        rootAnchorPane.getChildren().addAll(PaneOrdonances, PaneAjouterPatient, PanePatients);
+        PaneAbout.setOpacity(0);
+        rootAnchorPane.getChildren().removeAll(PanePatients, PaneAjouterPatient, PaneOrdonances, PaneAbout);
+        rootAnchorPane.getChildren().addAll(PaneOrdonances, PaneAjouterPatient, PanePatients, PaneAbout);
         btnOrdonance.setDisable(true);
-  
+
         fillcombox(Arrays.asList("HOMME", "FEMME"), comboSexeAddPati, "HOMME");
         SetTheme();
     }
-  public void SetTheme() {
-         LocalStorage storage = new LocalStorage();
 
-         String theme = storage.getData("mode", "daymode");
+    public void SetTheme() {
+        LocalStorage storage = new LocalStorage();
+
+        String theme = storage.getData("mode", "daymode");
         if (theme.equals("daymode")) {
-             rootStackPane.getStylesheets().remove("/css/pulseProthemeDARK.css");
+            rootStackPane.getStylesheets().remove("/css/pulseProthemeDARK.css");
             rootStackPane.getStylesheets().add("/css/pulseProtheme.css");
         } else {
-           rootStackPane.getStylesheets().remove("/css/pulseProtheme.css");
+            rootStackPane.getStylesheets().remove("/css/pulseProtheme.css");
             rootStackPane.getStylesheets().add("/css/pulseProthemeDARK.css");
         }
     }
+
     public void deadline() {
         String datedeadline = price("deadline", "ID", "1", "deadline");
         LocalDate deadline = LocalDate.parse(datedeadline);
@@ -276,8 +291,6 @@ public class FirstWindowController implements Initializable {
         clmResumePatient.setCellFactory(TextFieldTableCell.forTableColumn());
         clmResumePatient.setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event, "Resume", "patients", "ID"));
 
-      
-
         clmDeletePatients.setCellFactory((Callback) new Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>() {
             public TableCell<ObservableList, String> call(TableColumn<ObservableList, String> param) {
                 return new DeleteButtonCellStock();
@@ -345,10 +358,6 @@ public class FirstWindowController implements Initializable {
     private void SearchOrdonances(KeyEvent event) {
         searchInStockTable(txtSearchOrdoances, TableOrdonances);
 
-    }
-
-    @FXML
-    private void onAboutUsClicked(ActionEvent event) {
     }
 
     @FXML
@@ -420,18 +429,50 @@ public class FirstWindowController implements Initializable {
         fillTableWithConditionDESCENDING("ordonnance", "IDPatient", idforarticle, TableArticlesDetails, 5, clmIDArticle);
     }
 
-  @FXML
-private void changeMode(MouseEvent event) {
-    // Toggle mode state
-    isLightMode = !isLightMode;
+    @FXML
+    private void changeMode(MouseEvent event) {
+        // Toggle mode state
+        isLightMode = !isLightMode;
 
-    // Apply the appropriate mode
-    if (isLightMode) {
-        setLightMode();
+        // Apply the appropriate mode
+        if (isLightMode) {
+            setLightMode();
+        } else {
+            setDarkMode();
+        }
+    }
+
+    @FXML
+    private void ongithubclicked(MouseEvent event) {
+        loadWebpage(GITHUB);
+    }
+
+    @FXML
+    private void onFacebookClicked(MouseEvent event) {
+        loadWebpage(FACEBOOK);
+    }
+
+    @FXML
+    private void onLinkedinClicked(MouseEvent event) {
+        loadWebpage(LINKED_IN);
+
+    }
+
+   public void fillCircleWithImage() {
+    InputStream in = getClass().getResourceAsStream("/icons/dev_pic.jpg");
+    if (in != null) {
+        Image imgUsr = new Image(in);
+        about_us_pic.setFill(new ImagePattern(imgUsr));
+        try {
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     } else {
-        setDarkMode();
+        System.out.println("Image not found!");
     }
 }
+
 
     private class DeleteButtonCellStock extends TableCell<ObservableList, String> {
 
@@ -626,21 +667,21 @@ private void changeMode(MouseEvent event) {
         fillDataPatients();
     }
 
- private void setLightMode() {
-    LocalStorage storage = new LocalStorage();
-    storage.saveData("mode", "daymode");
-    btnToggle.setGlyphName("TOGGLE_ON");
-    rootStackPane.getStylesheets().remove("/css/pulseProthemeDARK.css");
-    rootStackPane.getStylesheets().add("/css/pulseProtheme.css");
-}
+    private void setLightMode() {
+        LocalStorage storage = new LocalStorage();
+        storage.saveData("mode", "daymode");
+        btnToggle.setGlyphName("TOGGLE_ON");
+        rootStackPane.getStylesheets().remove("/css/pulseProthemeDARK.css");
+        rootStackPane.getStylesheets().add("/css/pulseProtheme.css");
+    }
 
-private void setDarkMode() {
-    LocalStorage storage = new LocalStorage();
-    storage.saveData("mode", "nightmode");
-    btnToggle.setGlyphName("TOGGLE_OFF");
-    rootStackPane.getStylesheets().remove("/css/pulseProtheme.css");
-    rootStackPane.getStylesheets().add("/css/pulseProthemeDARK.css");
-}
+    private void setDarkMode() {
+        LocalStorage storage = new LocalStorage();
+        storage.saveData("mode", "nightmode");
+        btnToggle.setGlyphName("TOGGLE_OFF");
+        rootStackPane.getStylesheets().remove("/css/pulseProtheme.css");
+        rootStackPane.getStylesheets().add("/css/pulseProthemeDARK.css");
+    }
 
     @FXML
     private void CalculateAge(ActionEvent event) {
@@ -649,7 +690,7 @@ private void setDarkMode() {
 
     @FXML
     private void addNewPatient(ActionEvent event) {
-        String  Resume;
+        String Resume;
         LocalDate DateNaissance, DateConsultationLocalDate;
         Nom = txtNomAddPati.getText();
         Prenom = txtPrenoAddPati.getText();
@@ -702,8 +743,9 @@ private void setDarkMode() {
         PanePatients.setOpacity(1);
         PaneAjouterPatient.setOpacity(0);
         PaneOrdonances.setOpacity(0);
-        rootAnchorPane.getChildren().removeAll(PanePatients, PaneAjouterPatient, PaneOrdonances);
-        rootAnchorPane.getChildren().addAll(PaneOrdonances, PaneAjouterPatient, PanePatients);
+        PaneAbout.setOpacity(0);
+        rootAnchorPane.getChildren().removeAll(PanePatients, PaneAjouterPatient, PaneOrdonances, PaneAbout);
+        rootAnchorPane.getChildren().addAll(PaneAbout, PaneOrdonances, PaneAjouterPatient, PanePatients);
         btnOrdonance.setDisable(true);
         fillDataPatients();
     }
@@ -712,20 +754,32 @@ private void setDarkMode() {
     private void OnAddCliqued(ActionEvent event) {
         PanePatients.setOpacity(0);
         PaneOrdonances.setOpacity(0);
+        PaneAbout.setOpacity(0);
         PaneAjouterPatient.setOpacity(1);
-        rootAnchorPane.getChildren().removeAll(PaneAjouterPatient, PanePatients, PaneOrdonances);
-        rootAnchorPane.getChildren().addAll(PaneOrdonances, PanePatients, PaneAjouterPatient);
+        rootAnchorPane.getChildren().removeAll(PaneAjouterPatient, PanePatients, PaneOrdonances, PaneAbout);
+        rootAnchorPane.getChildren().addAll(PaneOrdonances, PaneAbout, PanePatients, PaneAjouterPatient);
     }
 
     @FXML
     private void OnOrdonCliqued(ActionEvent event) {
         PanePatients.setOpacity(0);
+        PaneAbout.setOpacity(0);
         PaneOrdonances.setOpacity(1);
         PaneAjouterPatient.setOpacity(0);
-        rootAnchorPane.getChildren().removeAll(PaneOrdonances, PaneAjouterPatient, PanePatients);
-        rootAnchorPane.getChildren().addAll(PaneAjouterPatient, PanePatients, PaneOrdonances);
+        rootAnchorPane.getChildren().removeAll(PaneOrdonances, PaneAjouterPatient, PanePatients, PaneAbout);
+        rootAnchorPane.getChildren().addAll(PaneAjouterPatient, PanePatients, PaneAbout, PaneOrdonances);
         fillDataOrdonances();
+    }
 
+    @FXML
+    private void onAboutUsClicked(ActionEvent event) {
+        PanePatients.setOpacity(0);
+        PaneOrdonances.setOpacity(0);
+        PaneAbout.setOpacity(1);
+        PaneAjouterPatient.setOpacity(0);
+        rootAnchorPane.getChildren().removeAll(PaneAbout, PaneAjouterPatient, PanePatients, PaneOrdonances);
+        rootAnchorPane.getChildren().addAll(PaneOrdonances, PanePatients, PaneAjouterPatient, PaneAbout);
+        fillCircleWithImage();
     }
 
     @FXML

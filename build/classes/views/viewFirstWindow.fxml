@@ -6,6 +6,7 @@
 <?import com.jfoenix.controls.JFXTextField?>
 <?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.image.Image?>
@@ -14,6 +15,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Text?>
 
 <StackPane fx:id="rootStackPane" prefHeight="586.0" prefWidth="917.0" stylesheets="@../css/pulseProtheme.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.FirstWindowController">
    <children>
@@ -68,7 +71,7 @@
                   </JFXButton>
                </children>
             </VBox>
-            <StackPane fx:id="PaneAjouterPatient" layoutX="231.0" layoutY="80.0" prefHeight="466.0" prefWidth="686.0" styleClass="hbox" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="211.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="40.0">
+            <StackPane fx:id="PaneAjouterPatient" layoutX="231.0" layoutY="80.0" opacity="0.0" prefHeight="466.0" prefWidth="686.0" styleClass="hbox" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="211.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="40.0">
                <padding>
                   <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                </padding>
@@ -159,7 +162,7 @@
                               </FontAwesomeIconView>
                            </children>
                         </HBox>
-                        <TableView fx:id="TablePatients" onMouseClicked="#EnableOrdonance" prefHeight="500.0" prefWidth="556.0" tableMenuButtonVisible="true">
+                        <TableView fx:id="TablePatients" onMouseClicked="#EnableOrdonance" prefHeight="500.0" prefWidth="556.0">
                           <columns>
                             <TableColumn fx:id="clmOrdrePatient" prefWidth="75.0" text="Ordre" />
                             <TableColumn fx:id="clmNomPatients" prefWidth="75.0" text="Nom" />
@@ -275,6 +278,92 @@
                </children>
             </StackPane>
             <FontAwesomeIconView fx:id="btnToggle" glyphName="TOGGLE_OFF" layoutX="856.0" layoutY="52.0" onMouseClicked="#changeMode" size="20" AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="5.0" />
+            <StackPane fx:id="PaneAbout" layoutX="242.0" layoutY="62.0" prefHeight="474.0" prefWidth="685.0" styleClass="hbox" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="212.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="40.0">
+               <padding>
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+               </padding>
+               <children>
+                  <HBox alignment="CENTER" prefWidth="576.0">
+                     <children>
+                        <VBox alignment="CENTER" prefHeight="382.0" prefWidth="410.0" styleClass="hbox">
+                           <children>
+                              <Circle fx:id="about_us_pic" accessibleRole="IMAGE_VIEW" fill="DODGERBLUE" radius="148.0" stroke="BLACK" strokeLineCap="ROUND" strokeLineJoin="ROUND" strokeType="INSIDE">
+                                 <VBox.margin>
+                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                 </VBox.margin>
+                              </Circle>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="labelMain" text="Pulse Pro V .2.1.1 created and devlopped by Samer Elouissi" wrappingWidth="285.33673095703125">
+                                 <VBox.margin>
+                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                 </VBox.margin>
+                              </Text>
+                           </children>
+                           <HBox.margin>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </HBox.margin>
+                        </VBox>
+                        <VBox alignment="CENTER" prefHeight="382.0" prefWidth="253.0" styleClass="hbox">
+                           <children>
+                              <HBox alignment="CENTER" onMouseClicked="#ongithubclicked" styleClass="linkedlabel">
+                                 <children>
+                                    <FontAwesomeIconView glyphName="GITHUB" size="40" wrappingWidth="41.0857629776001">
+                                       <HBox.margin>
+                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                       </HBox.margin>
+                                    </FontAwesomeIconView>
+                                    <Label text="GitHub">
+                                       <HBox.margin>
+                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER" layoutX="10.0" layoutY="201.0" onMouseClicked="#onFacebookClicked" styleClass="linkedlabel">
+                                 <children>
+                                    <FontAwesomeIconView glyphName="FACEBOOK" size="40" wrappingWidth="41.0857629776001">
+                                       <HBox.margin>
+                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                       </HBox.margin>
+                                    </FontAwesomeIconView>
+                                    <Label text="Facebook">
+                                       <HBox.margin>
+                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER" layoutX="10.0" layoutY="221.0" onMouseClicked="#onLinkedinClicked" styleClass="linkedlabel">
+                                 <children>
+                                    <FontAwesomeIconView glyphName="LINKEDIN" size="40" wrappingWidth="41.0857629776001">
+                                       <HBox.margin>
+                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                       </HBox.margin>
+                                    </FontAwesomeIconView>
+                                    <Label text="LinkedIn">
+                                       <HBox.margin>
+                                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                 </VBox.margin>
+                              </HBox>
+                           </children>
+                           <HBox.margin>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </HBox.margin>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+            </StackPane>
          </children>
          <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

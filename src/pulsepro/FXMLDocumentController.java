@@ -48,8 +48,7 @@ public class FXMLDocumentController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        txtusername.setText("samer");
-        txtpsw.setText("samer");
+  
     }
 
     @FXML

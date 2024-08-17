@@ -217,7 +217,7 @@ public class OrdonExamController implements Initializable {
         Quantite = Integer.parseInt(comboQuantiteMedic.getSelectionModel().getSelectedItem().toString());
         detail = txtDetailMedic.getText();
         passe = 0;
-        int IDOrdonance=myConnectionPP.createNewOrdonnance(IDPatient);
+        
         myConnectionPP.addToOrdonnance(IDPatient, Article, Quantite, detail);
         fillDataTableMedic();
 
