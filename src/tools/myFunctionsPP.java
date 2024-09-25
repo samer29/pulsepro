@@ -17,8 +17,7 @@ import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
-import static controllers.FirstWindowController.theme;
-import controllers.SettingsController;
+import static controllers.FirstWindowPulseProController.theme;
 import java.awt.Desktop;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -92,6 +91,7 @@ import static tools.myConnectionPP.inst2;
 import static tools.myConnectionPP.inst3;
 import static tools.myConnectionPP.passe;
 import static tools.myConnectionPP.fillCombo;
+import static tools.myConnectionPP.instJOIN;
 public class myFunctionsPP {
 
     static ObservableList<Object> data;
@@ -609,6 +609,26 @@ public class myFunctionsPP {
         try {
             data = FXCollections.observableArrayList();
             ResultSet rst = inst3(table, clm, id);
+            while (rst.next()) {
+                ObservableList row = FXCollections.observableArrayList();
+                for (int i = 1; i <= size; ++i) {
+                    row.add((Object) ("" + rst.getString(i)));
+                }
+                data.add((Object) row);
+            }
+            tv.setItems(data);
+            myclm.setSortType(TableColumn.SortType.ASCENDING);
+            tv.getSortOrder().add(myclm);
+            tv.sort();
+        } catch (SQLException ex) {
+            Logger.getLogger(myFunctionsPP.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+        public static void fillTableWithJoinASCENDING(String id, TableView tv, int size, TableColumn myclm) {
+        try {
+            data = FXCollections.observableArrayList();
+            ResultSet rst = instJOIN(id);
             while (rst.next()) {
                 ObservableList row = FXCollections.observableArrayList();
                 for (int i = 1; i <= size; ++i) {

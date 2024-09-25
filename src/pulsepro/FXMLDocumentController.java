@@ -24,6 +24,7 @@ import javafx.scene.layout.StackPane;
 import static tools.myConnectionPP.instload2things;
 import static tools.myFunctionsPP.closeStage;
 import static tools.myFunctionsPP.loadfadestage;
+import static tools.myFunctionsPP.minimizeScene;
 
 /**
  *
@@ -48,7 +49,8 @@ public class FXMLDocumentController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-  
+        txtusername.setText("samer");
+        txtpsw.setText("samer");
     }
 
     @FXML
@@ -57,7 +59,8 @@ public class FXMLDocumentController implements Initializable {
             loadfadestage(1000, this.rootAnchorPane, "/views/viewHiddenMenu.fxml", "", "yes");
         } else {
             try {
-                ResultSet rs = instload2things("login", "username", txtusername.getText(), "password", txtpsw.getText());
+                ResultSet rs = instload2things("login", "username", txtusername.getText(), "password",
+                        txtpsw.getText());
                 if (rs.next()) {
                     loadfadestage(1000, this.rootAnchorPane, "/views/viewFirstWindow.fxml", "", "yes");
                 } else {
@@ -78,6 +81,7 @@ public class FXMLDocumentController implements Initializable {
 
     @FXML
     private void MinusWindow(MouseEvent event) {
+        minimizeScene(rootAnchorPane);
     }
 
 }

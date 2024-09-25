@@ -18,12 +18,11 @@ import static tools.myFunctionsPP.outpoutstring;
  * @author Samer
  */
 public class PulsePro extends Application {
-    StackPane rootStackPane;
     @Override
     public void start(Stage stage) {
         try {
             // Font.loadFont(getClass().getResource("C:\\Users\\Samer\\Documents\\NetBeansProjects\\myPharm\\src\\fonts\\Roboto.ttf").toExternalForm(), 12);
-            loadWindow(getClass().getResource("FXMLDocument.fxml"), "my Pharm", null, "no");
+            loadWindow(getClass().getResource("FXMLDocument.fxml"), "PulsePro", null, "no");
 
             testdatabase();
         } catch (Exception e) {

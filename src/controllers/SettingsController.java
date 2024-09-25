@@ -7,8 +7,8 @@ package controllers;
 
 import com.jfoenix.controls.JFXRadioButton;
 import com.jfoenix.controls.JFXTextField;
-import static controllers.FirstWindowController.HOVERED_BUTTON_STYLE;
-import static controllers.FirstWindowController.IDLE_BUTTON_STYLE;
+import static controllers.FirstWindowPulseProController.HOVERED_BUTTON_STYLE;
+import static controllers.FirstWindowPulseProController.IDLE_BUTTON_STYLE;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.net.URL;
@@ -90,25 +90,29 @@ public class SettingsController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
- 
-        fillData(tableMedicament, clmIDMedic, clmMedic, clmDeleteMedicament, "medicaments ", txtSearch, "medicaments", "NomMed", "ID");
-        fillData(tableExamen, clmIDExamen, clmExamen, clmDeleteExamen, "listexamens ", txtSearchExamen, "listexamens", "Examen", "ID");
+
+        fillData(tableMedicament, clmIDMedic, clmMedic, clmDeleteMedicament, "medicaments ", txtSearch, "medicaments",
+                "NomMed", "ID");
+        fillData(tableExamen, clmIDExamen, clmExamen, clmDeleteExamen, "listexamens ", txtSearchExamen, "listexamens",
+                "Examen", "ID");
         SetTheme();
-        //  fillData(tableDCI, clmIDDCI, clmDCI, clmDeleteDCI, "dci", txtDCI, "DCI", "NomDCI", "ID");
+        // fillData(tableDCI, clmIDDCI, clmDCI, clmDeleteDCI, "dci", txtDCI, "DCI",
+        // "NomDCI", "ID");
     }
 
-        public void SetTheme() {
-         LocalStorage storage = new LocalStorage();
+    public void SetTheme() {
+        LocalStorage storage = new LocalStorage();
 
-         String theme = storage.getData("mode", "daymode");
+        String theme = storage.getData("mode", "daymode");
         if (theme.equals("daymode")) {
-             rootStackPane.getStylesheets().remove("/css/pulseProthemeDARK.css");
+            rootStackPane.getStylesheets().remove("/css/pulseProthemeDARK.css");
             rootStackPane.getStylesheets().add("/css/pulseProtheme.css");
         } else {
-           rootStackPane.getStylesheets().remove("/css/pulseProtheme.css");
+            rootStackPane.getStylesheets().remove("/css/pulseProtheme.css");
             rootStackPane.getStylesheets().add("/css/pulseProthemeDARK.css");
         }
     }
+
     @FXML
 
     private void SearchMedic(KeyEvent event) {
@@ -118,7 +122,8 @@ public class SettingsController implements Initializable {
     @FXML
     private void AddNewMedicament() {
         addNewPara("medicaments", "NomMed", txtAddMedicament, rootStackPane, rootAnchorPane);
-        fillData(tableMedicament, clmIDMedic, clmMedic, clmDeleteMedicament, "medicaments ", txtSearch, "medicaments", "NomMed", "ID");
+        fillData(tableMedicament, clmIDMedic, clmMedic, clmDeleteMedicament, "medicaments ", txtSearch, "medicaments",
+                "NomMed", "ID");
 
     }
 
@@ -130,7 +135,8 @@ public class SettingsController implements Initializable {
     @FXML
     private void AddNewExamen() {
         addNewPara("listexamens", "Examen", txtAddExamen, rootStackPane, rootAnchorPane);
-        fillData(tableExamen, clmIDExamen, clmExamen, clmDeleteExamen, "listexamens ", txtSearchExamen, "listexamens", "Examen", "ID");
+        fillData(tableExamen, clmIDExamen, clmExamen, clmDeleteExamen, "listexamens ", txtSearchExamen, "listexamens",
+                "Examen", "ID");
 
     }
 
@@ -157,24 +163,28 @@ public class SettingsController implements Initializable {
             myTable.setItems(filteredData);
         } else {
             // If the search text is empty, refill the table with the original data
-            fillData(tableMedicament, clmIDMedic, clmMedic, clmDeleteMedicament, "medicaments ", txtSearch, "medicaments", "NomMed", "ID");
-            fillData(tableExamen, clmIDExamen, clmExamen, clmDeleteExamen, "listexamens ", txtSearchExamen, "listexamens", "Examen", "ID");
+            fillData(tableMedicament, clmIDMedic, clmMedic, clmDeleteMedicament, "medicaments ", txtSearch,
+                    "medicaments", "NomMed", "ID");
+            fillData(tableExamen, clmIDExamen, clmExamen, clmDeleteExamen, "listexamens ", txtSearchExamen,
+                    "listexamens", "Examen", "ID");
 
         }
     }
 
-    private void fillData(TableView mytable, TableColumn clm1, TableColumn clm2, TableColumn clmDelete, String from, JFXTextField mytext, String produit, String clmSet, String clmWhat) {
+    private void fillData(TableView mytable, TableColumn clm1, TableColumn clm2, TableColumn clmDelete, String from,
+            JFXTextField mytext, String produit, String clmSet, String clmWhat) {
         mytext.setText(null);
         data = null;
         mytable.setEditable(true);
         fillculms(clm1, 0);
         fillculms(clm2, 1);
-        clmDelete.setCellFactory((Callback) new Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>() {
-            @Override
-            public TableCell<ObservableList, String> call(TableColumn<ObservableList, String> param) {
-                return new DeleteButton(mytable, from, clm1, clm2, clmDelete, mytext, produit, clmSet, clmWhat);
-            }
-        });
+        clmDelete.setCellFactory(
+                (Callback) new Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>() {
+                    @Override
+                    public TableCell<ObservableList, String> call(TableColumn<ObservableList, String> param) {
+                        return new DeleteButton(mytable, from, clm1, clm2, clmDelete, mytext, produit, clmSet, clmWhat);
+                    }
+                });
         fillTable2(data, mytable, from, 1, 2);
         Callback<TableColumn, TableCell> cellFactory1 = new Callback<TableColumn, TableCell>() {
 
@@ -200,10 +210,11 @@ public class SettingsController implements Initializable {
         JFXTextField mytext2;
         String produit2, clmSet2, clmWhat2;
 
-        DeleteButton(TableView mytable, String from, TableColumn clm1, TableColumn clm2, TableColumn clm3, JFXTextField mytext, String produit, String clmSet, String clmWhat) {
+        DeleteButton(TableView mytable, String from, TableColumn clm1, TableColumn clm2, TableColumn clm3,
+                JFXTextField mytext, String produit, String clmSet, String clmWhat) {
             cellButton2.setFocusTraversable(false);
             cellButton2.setPadding(new Insets(0.0));
-            cellButton.getChildren().addAll(new Node[]{cellButton2});
+            cellButton.getChildren().addAll(new Node[] { cellButton2 });
             cellButton2.setStyle(IDLE_BUTTON_STYLE);
             cellButton2.setOnMouseExited(e -> cellButton2.setStyle(IDLE_BUTTON_STYLE));
             cellButton2.setOnMouseEntered(e -> cellButton2.setStyle(HOVERED_BUTTON_STYLE));
@@ -265,7 +276,7 @@ public class SettingsController implements Initializable {
             this.setGraphic((Node) this.textField);
             this.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
             this.textField.selectAll();
-            //Object row = tableDCI.getSelectionModel().getSelectedItems().get(0);
+            // Object row = tableDCI.getSelectionModel().getSelectedItems().get(0);
         }
 
         public void cancelEdit() {
@@ -299,12 +310,13 @@ public class SettingsController implements Initializable {
                 public void handle(KeyEvent t) {
                     if (t.getCode() == KeyCode.ENTER) {
                         EditingCelInst.this.commitEdit(EditingCelInst.this.textField.getText());
-                        ObservableList rowList = (ObservableList) mytable2.getItems().get(EditingCelInst.this.getIndex());
+                        ObservableList rowList = (ObservableList) mytable2.getItems()
+                                .get(EditingCelInst.this.getIndex());
                         rowList.set(EditingCelInst.this.i, (Object) EditingCelInst.this.textField.getText());
                         String des = rowList.get(1) + "";
                         String SN = rowList.get(0) + "";
                         editSettings(from2, clm3, des, clm4, SN);
-                        //ConnexionJM.editInstall(des, mod, ing, clien, date, obser, SN);
+                        // ConnexionJM.editInstall(des, mod, ing, clien, date, obser, SN);
                     } else if (t.getCode() == KeyCode.ESCAPE) {
                         EditingCelInst.this.cancelEdit();
                     }

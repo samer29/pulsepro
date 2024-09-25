@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane fx:id="rootStackPane" prefHeight="524.0" prefWidth="994.0" stylesheets="@../css/pulseProtheme.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.OrdonExamController">
+<StackPane fx:id="rootStackPane" prefHeight="524.0" prefWidth="1202.0" stylesheets="@../css/pulseProtheme.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.OrdonExamController">
    <children>
       <AnchorPane id="AnchorPane" fx:id="rootAnchorPane" prefHeight="400.0" prefWidth="600.0">
          <children>
@@ -39,9 +39,9 @@
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                </padding>
             </HBox>
-            <HBox alignment="TOP_CENTER" layoutY="72.0" prefHeight="391.0" prefWidth="816.0" AnchorPane.bottomAnchor="61.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="72.0">
+            <HBox alignment="TOP_CENTER" layoutY="72.0" prefHeight="457.0" prefWidth="994.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="72.0">
                <children>
-                  <VBox alignment="TOP_CENTER" prefHeight="371.0" prefWidth="580.0">
+                  <VBox alignment="TOP_CENTER" prefHeight="432.0" prefWidth="721.0">
                      <children>
                         <HBox prefHeight="30.0" prefWidth="536.0">
                            <VBox.margin>
@@ -58,6 +58,11 @@
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                  </HBox.margin>
                               </JFXComboBox>
+                              <JFXComboBox fx:id="comboFormeMedic" labelFloat="true" layoutX="271.0" layoutY="20.0" promptText="Forme">
+                                 <HBox.margin>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </HBox.margin>
+                              </JFXComboBox>
                               <JFXTextField fx:id="txtDetailMedic" labelFloat="true" prefHeight="30.0" prefWidth="170.0" promptText="Détail">
                                  <HBox.margin>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -70,12 +75,13 @@
                               </FontAwesomeIconView>
                            </children>
                         </HBox>
-                        <TableView fx:id="tableOrdonance" prefHeight="311.0" prefWidth="493.0">
+                        <TableView fx:id="tableOrdonance" prefHeight="440.0" prefWidth="684.0">
                           <columns>
                             <TableColumn fx:id="clmID" prefWidth="75.0" text="ID" />
                             <TableColumn fx:id="clmMedicament" prefWidth="75.0" text="Medicament" />
                               <TableColumn fx:id="clmQuantite" prefWidth="75.0" text="Quantité" />
                               <TableColumn fx:id="clmDetailMedic" prefWidth="75.0" text="Détail" />
+                              <TableColumn fx:id="clmFormeMedic" prefWidth="75.0" text="Forme" />
                               <TableColumn fx:id="clmDeleteMedic" prefWidth="75.0" text="Supprimer" />
                           </columns>
                            <columnResizePolicy>
@@ -85,7 +91,7 @@
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </VBox.margin>
                         </TableView>
-                        <HBox alignment="CENTER">
+                        <HBox alignment="CENTER" prefHeight="88.0" prefWidth="529.0">
                            <children>
                               <JFXButton onAction="#visualiserOrdonnance" text="Visualiser">
                                  <graphic>

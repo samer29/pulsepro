@@ -8,8 +8,8 @@ package controllers;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXDatePicker;
 import com.jfoenix.controls.JFXTextField;
-import static controllers.FirstWindowController.HOVERED_BUTTON_STYLE;
-import static controllers.FirstWindowController.IDLE_BUTTON_STYLE;
+import static controllers.FirstWindowPulseProController.HOVERED_BUTTON_STYLE;
+import static controllers.FirstWindowPulseProController.IDLE_BUTTON_STYLE;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.net.URL;
@@ -46,7 +46,6 @@ import static tools.myFunctionsPP.fillTable2;
 import static tools.myFunctionsPP.fillculms;
 import static tools.myFunctionsPP.loadWindow;
 
-
 /**
  * FXML Controller class
  *
@@ -61,84 +60,96 @@ public class HiddenMenuController implements Initializable {
     @FXML
     private TableView tblUsers;
     @FXML
-    private TableColumn clmDelete,clmPsw,clmUserName,clmID;
+    private TableColumn clmDelete, clmPsw, clmUserName, clmID;
     @FXML
-    private JFXTextField txtPassword,txtUserName;
+    private JFXTextField txtPassword, txtUserName;
     @FXML
     private JFXDatePicker txtDateDeadline;
     JFXButton btn = new JFXButton("OK");
     ObservableList<Object> data;
+
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        fillData(tblUsers, clmID, clmUserName, clmPsw,clmDelete, "login",txtUserName,"username","password","username","ID");
+        fillData(tblUsers, clmID, clmUserName, clmPsw, clmDelete, "login", txtUserName, "username", "password",
+                "username", "ID");
         // TODO
-    }    
+    }
 
     @FXML
     private void addNewUser(ActionEvent event) {
         addUser(txtUserName.getText(), txtPassword.getText());
         if (passe == 1) {
-            AlertMaker.showMaterialDialog(rootStackPane, (Node) rootAnchorPane, Arrays.asList(new JFXButton[]{btn}), null, "ENREGISTREMENT AVEC SUCCESS");
+            AlertMaker.showMaterialDialog(rootStackPane, (Node) rootAnchorPane, Arrays.asList(new JFXButton[] { btn }),
+                    null, "ENREGISTREMENT AVEC SUCCESS");
             btn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseevent -> {
-             setNullValues();
+                setNullValues();
             });
         } else {
-            AlertMaker.showMaterialDialogError(rootStackPane, (Node) rootAnchorPane, Arrays.asList(new JFXButton[]{btn}), ex2 + "", "ERREUR D'AJOUT");
-          
+            AlertMaker.showMaterialDialogError(rootStackPane, (Node) rootAnchorPane,
+                    Arrays.asList(new JFXButton[] { btn }), ex2 + "", "ERREUR D'AJOUT");
+
         }
-        
+
     }
 
     @FXML
     private void NewUser(ActionEvent event) {
-       setNullValues();
-        
+        setNullValues();
+
     }
-    public void setNullValues(){
-         txtUserName.setText(null);
+
+    public void setNullValues() {
+        txtUserName.setText(null);
         txtPassword.setText(null);
     }
 
     @FXML
     private void updatenewDeadline(ActionEvent event) {
-        String date=(txtDateDeadline.getValue()).toString();
+        String date = (txtDateDeadline.getValue()).toString();
         editSettings("deadline", "deadline", date, "ID", "1");
         if (passe == 1) {
-            AlertMaker.showMaterialDialog(rootStackPane, (Node) rootAnchorPane, Arrays.asList(new JFXButton[]{btn}), null, "ENREGISTREMENT AVEC SUCCESS");
+            AlertMaker.showMaterialDialog(rootStackPane, (Node) rootAnchorPane, Arrays.asList(new JFXButton[] { btn }),
+                    null, "ENREGISTREMENT AVEC SUCCESS");
             btn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseevent -> {
-            txtDateDeadline.setValue(null);
+                txtDateDeadline.setValue(null);
             });
         } else {
-            AlertMaker.showMaterialDialogError(rootStackPane, (Node) rootAnchorPane, Arrays.asList(new JFXButton[]{btn}), ex2 + "", "ERREUR D'AJOUT");
-          
+            AlertMaker.showMaterialDialogError(rootStackPane, (Node) rootAnchorPane,
+                    Arrays.asList(new JFXButton[] { btn }), ex2 + "", "ERREUR D'AJOUT");
+
         }
     }
 
     @FXML
     private void ChangeServer(ActionEvent event) {
-         loadWindow(this.getClass().getResource("/views/viewServer.fxml"), "Server ", null, "no");
+        loadWindow(this.getClass().getResource("/views/viewServer.fxml"), "Server ", null, "no");
     }
-    private void fillData(TableView mytable, TableColumn clm1, TableColumn clm2,TableColumn clm3, TableColumn clmDelete, String from, JFXTextField mytext, String produit,String password, String clmSet, String clmWhat) {
+
+    private void fillData(TableView mytable, TableColumn clm1, TableColumn clm2, TableColumn clm3,
+            TableColumn clmDelete, String from, JFXTextField mytext, String produit, String password, String clmSet,
+            String clmWhat) {
         mytext.setText(null);
         data = null;
         mytable.setEditable(true);
         fillculms(clm1, 0);
         fillculms(clm2, 1);
         fillculms(clm3, 2);
-        clmDelete.setCellFactory((Callback) new Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>() {
-            @Override
-            public TableCell<ObservableList, String> call(TableColumn<ObservableList, String> param) {
-                return new DeleteButton(mytable, from, clm1, clm2, clmDelete,clm3, mytext, produit,password, clmSet, clmWhat);
-            }
-        });
+        clmDelete.setCellFactory(
+                (Callback) new Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>() {
+                    @Override
+                    public TableCell<ObservableList, String> call(TableColumn<ObservableList, String> param) {
+                        return new DeleteButton(mytable, from, clm1, clm2, clmDelete, clm3, mytext, produit, password,
+                                clmSet, clmWhat);
+                    }
+                });
         fillTable2(data, mytable, from, 1, 3);
         Callback<TableColumn, TableCell> cellFactory1 = new Callback<TableColumn, TableCell>() {
 
             public TableCell call(TableColumn p) {
-                return new EditingCelInst(1, from, clmSet, clmWhat,mytable);
+                return new EditingCelInst(1, from, clmSet, clmWhat, mytable);
             }
         };
         clm2.setCellFactory((Callback) cellFactory1);
@@ -148,20 +159,23 @@ public class HiddenMenuController implements Initializable {
     private void closeWindow(MouseEvent event) {
         closeStage(rootAnchorPane);
     }
+
     private class DeleteButton extends TableCell<ObservableList, String> {
 
         final HBox cellButton = new HBox();
         final Button cellButton2 = new Button("");
         TableView mytable2;
         String from2;
-        TableColumn clm4, clm5, clm6,clm7;
+        TableColumn clm4, clm5, clm6, clm7;
         JFXTextField mytext2;
-        String password2,produit2, clmSet2, clmWhat2;
+        String password2, produit2, clmSet2, clmWhat2;
 
-        DeleteButton(TableView mytable, String from, TableColumn clm1, TableColumn clm2, TableColumn clm3,TableColumn clm33, JFXTextField mytext, String produit,String password, String clmSet, String clmWhat) {
+        DeleteButton(TableView mytable, String from, TableColumn clm1, TableColumn clm2, TableColumn clm3,
+                TableColumn clm33, JFXTextField mytext, String produit, String password, String clmSet,
+                String clmWhat) {
             cellButton2.setFocusTraversable(false);
             cellButton2.setPadding(new Insets(0.0));
-            cellButton.getChildren().addAll(new Node[]{cellButton2});
+            cellButton.getChildren().addAll(new Node[] { cellButton2 });
             cellButton2.setStyle(IDLE_BUTTON_STYLE);
             cellButton2.setOnMouseExited(e -> cellButton2.setStyle(IDLE_BUTTON_STYLE));
             cellButton2.setOnMouseEntered(e -> cellButton2.setStyle(HOVERED_BUTTON_STYLE));
@@ -178,7 +192,7 @@ public class HiddenMenuController implements Initializable {
             produit2 = produit;
             clmSet2 = clmSet;
             clmWhat2 = clmWhat;
-            password2=password;
+            password2 = password;
 
         }
 
@@ -195,15 +209,20 @@ public class HiddenMenuController implements Initializable {
                             String ID = null;
                             ID = rowList.get(0).toString();
                             delete(ID, from2, "ID");
-                            fillData(mytable2, clm4, clm5, clm6,clm7, from2, mytext2, produit2,password2, clmSet2, clmWhat2);
+                            fillData(mytable2, clm4, clm5, clm6, clm7, from2, mytext2, produit2, password2, clmSet2,
+                                    clmWhat2);
                             JFXButton button = new JFXButton("Terminer!");
-                            AlertMaker.showMaterialDialog(rootStackPane, (Node) rootAnchorPane, Arrays.asList(new JFXButton[]{button}), null, produit2 + " Bien Supprimée");
+                            AlertMaker.showMaterialDialog(rootStackPane, (Node) rootAnchorPane,
+                                    Arrays.asList(new JFXButton[] { button }), null, produit2 + " Bien Supprimée");
                         });
                         btnno.addEventHandler(MouseEvent.MOUSE_CLICKED, event1 -> {
                             JFXButton button = new JFXButton("OK");
-                            AlertMaker.showMaterialDialog(rootStackPane, (Node) rootAnchorPane, Arrays.asList(new JFXButton[]{button}), null, "Suppression annulée");
+                            AlertMaker.showMaterialDialog(rootStackPane, (Node) rootAnchorPane,
+                                    Arrays.asList(new JFXButton[] { button }), null, "Suppression annulée");
                         });
-                        AlertMaker.showMaterialDialog(rootStackPane, (Node) rootAnchorPane, Arrays.asList(new JFXButton[]{btnyes, btnno}), "Confirmation", "Voulez vous vraiment supprimer ce " + produit2 + " de façon permanente ?");
+                        AlertMaker.showMaterialDialog(rootStackPane, (Node) rootAnchorPane,
+                                Arrays.asList(new JFXButton[] { btnyes, btnno }), "Confirmation",
+                                "Voulez vous vraiment supprimer ce " + produit2 + " de façon permanente ?");
                     }
                 });
                 setGraphic((Node) cellButton2);
@@ -213,18 +232,19 @@ public class HiddenMenuController implements Initializable {
         }
     }
 
-   class EditingCelInst extends TableCell<ObservableList, String> {
+    class EditingCelInst extends TableCell<ObservableList, String> {
 
         private TextField textField;
         int i;
         String clm3, clm4, from2;
         TableView mytable2;
-        public EditingCelInst(int ii, String from, String clm1, String clm2,TableView mytable) {
+
+        public EditingCelInst(int ii, String from, String clm1, String clm2, TableView mytable) {
             this.i = ii;
             clm3 = clm1;
             clm4 = clm2;
             from2 = from;
-            mytable2=mytable;
+            mytable2 = mytable;
         }
 
         public void startEdit() {
@@ -233,7 +253,7 @@ public class HiddenMenuController implements Initializable {
             this.setGraphic((Node) this.textField);
             this.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
             this.textField.selectAll();
-            //Object row = tableDCI.getSelectionModel().getSelectedItems().get(0);
+            // Object row = tableDCI.getSelectionModel().getSelectedItems().get(0);
         }
 
         public void cancelEdit() {
@@ -267,12 +287,13 @@ public class HiddenMenuController implements Initializable {
                 public void handle(KeyEvent t) {
                     if (t.getCode() == KeyCode.ENTER) {
                         EditingCelInst.this.commitEdit(EditingCelInst.this.textField.getText());
-                        ObservableList rowList = (ObservableList) mytable2.getItems().get(EditingCelInst.this.getIndex());
+                        ObservableList rowList = (ObservableList) mytable2.getItems()
+                                .get(EditingCelInst.this.getIndex());
                         rowList.set(EditingCelInst.this.i, (Object) EditingCelInst.this.textField.getText());
                         String des = rowList.get(1) + "";
                         String SN = rowList.get(0) + "";
                         editSettings(from2, clm3, des, clm4, SN);
-                        //ConnexionJM.editInstall(des, mod, ing, clien, date, obser, SN);
+                        // ConnexionJM.editInstall(des, mod, ing, clien, date, obser, SN);
                     } else if (t.getCode() == KeyCode.ESCAPE) {
                         EditingCelInst.this.cancelEdit();
                     }

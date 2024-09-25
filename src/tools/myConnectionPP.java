@@ -49,7 +49,7 @@ public class myConnectionPP {
 
     public static void delete(String id, String from, String where) {
         try {
-            //DELETE FROM stock WHERE Quantite=0
+            // DELETE FROM stock WHERE Quantite=0
             String query = "DELETE FROM " + from + " WHERE " + where + " = '" + id + "';";
             if (cnx == null) {
                 cnx = connecterDB();
@@ -141,13 +141,15 @@ public class myConnectionPP {
         return rst;
     }
 
-    public static ResultSet fillComboWithConditionwithoutDuplicatedData(String select, String from, String where, String what, String DatePeremp) {
+    public static ResultSet fillComboWithConditionwithoutDuplicatedData(String select, String from, String where,
+            String what, String DatePeremp) {
         try {
             if (cnx == null) {
                 cnx = connecterDB();
             }
             st = cnx.createStatement();
-            rst = st.executeQuery("SELECT DISTINCT " + select + " FROM " + from + " WHERE " + where + "='" + what + "'" + "ORDER BY " + DatePeremp);
+            rst = st.executeQuery("SELECT DISTINCT " + select + " FROM " + from + " WHERE " + where + "='" + what + "'"
+                    + "ORDER BY " + DatePeremp);
 
         } catch (SQLException ex) {
             Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
@@ -155,13 +157,15 @@ public class myConnectionPP {
         return rst;
     }
 
-    public static ResultSet fillComboWithConditionDuplicatedDataAndSorted(String select, String from, String where, String what, String DatePeremp) {
+    public static ResultSet fillComboWithConditionDuplicatedDataAndSorted(String select, String from, String where,
+            String what, String DatePeremp) {
         try {
             if (cnx == null) {
                 cnx = connecterDB();
             }
             st = cnx.createStatement();
-            rst = st.executeQuery("SELECT  " + select + " FROM " + from + " WHERE " + where + "='" + what + "'" + "ORDER BY " + DatePeremp);
+            rst = st.executeQuery("SELECT  " + select + " FROM " + from + " WHERE " + where + "='" + what + "'"
+                    + "ORDER BY " + DatePeremp);
 
         } catch (SQLException ex) {
             Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
@@ -257,13 +261,50 @@ public class myConnectionPP {
         return rst;
     }
 
+    public static ResultSet instJOIN(String ID) {
+        try {
+            if (cnx == null) {
+                cnx = connecterDB();
+            }
+            st = cnx.createStatement();
+            //SELECT * FROM ligneordonance AS L JOIN ordonnance as O ON L.IDOrdonnance=O.ID WHERE O.IDConsultation='10000';
+            rst = st.executeQuery("SELECT * FROM ligneordonance AS L JOIN ordonnance as O ON L.IDOrdonnance=O.ID WHERE O.IDConsultation='" + ID + "'");
+        } catch (SQLException sQLException) {
+            // empty catch block
+            Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, sQLException);
+
+        }
+        return rst;
+    }
+
+    public static ResultSet instsimpleJOIN(String consultationID) {
+        try {
+            if (cnx == null) {
+                cnx = connecterDB();
+            }
+            st = cnx.createStatement();
+
+            // Correct JOIN query to fetch nom, prenom, sexe, and age based on the consultation ID
+            String query = "SELECT patients.nom, patients.prenom, patients.sexe, patients.age,consultation.DateConsultation "
+                    + "FROM consultation "
+                    + "JOIN patients ON consultation.IDPatient = patients.ID "
+                    + "WHERE consultation.ID = " + consultationID;
+
+            rst = st.executeQuery(query);
+        } catch (SQLException sQLException) {
+            Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, sQLException);
+        }
+        return rst;
+    }
+
     public static ResultSet inst4(String table, String clm, String m, String y) {
         try {
             if (cnx == null) {
                 cnx = connecterDB();
             }
             st = cnx.createStatement();
-            rst = st.executeQuery("SELECT * FROM " + table + " WHERE MONTH(" + clm + ") = " + m + " AND YEAR(" + clm + ")=" + y + "");
+            rst = st.executeQuery(
+                    "SELECT * FROM " + table + " WHERE MONTH(" + clm + ") = " + m + " AND YEAR(" + clm + ")=" + y + "");
         } catch (SQLException sQLException) {
             // empty catch block
             Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, sQLException);
@@ -280,9 +321,11 @@ public class myConnectionPP {
             }
             st = cnx.createStatement();
             if (ing.equals("TOUS")) {
-                rst = st.executeQuery("SELECT * FROM " + table + " WHERE MONTH(" + clm + ") = " + m + " AND YEAR(" + clm + ")=" + y);
+                rst = st.executeQuery(
+                        "SELECT * FROM " + table + " WHERE MONTH(" + clm + ") = " + m + " AND YEAR(" + clm + ")=" + y);
             } else {
-                rst = st.executeQuery("SELECT * FROM " + table + " WHERE MONTH(" + clm + ") = " + m + " AND YEAR(" + clm + ")=" + y + " AND " + clm2 + "='" + ing + "' ");
+                rst = st.executeQuery("SELECT * FROM " + table + " WHERE MONTH(" + clm + ") = " + m + " AND YEAR(" + clm
+                        + ")=" + y + " AND " + clm2 + "='" + ing + "' ");
             }
 
         } catch (SQLException sQLException) {
@@ -336,7 +379,8 @@ public class myConnectionPP {
         } catch (SQLException ex) {
             Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
         }
-        // SELECT * FROM bllocaldetails WHERE Produit = 'Aténolol' AND NBon IN ('1212', '121212', '121213', '1244', '2121', '21212');
+        // SELECT * FROM bllocaldetails WHERE Produit = 'Aténolol' AND NBon IN ('1212',
+        // '121212', '121213', '1244', '2121', '21212');
         // Check if there are any NBon values
         if (!nbonValues.isEmpty()) {
             // Build the SQL query for the second query
@@ -360,7 +404,8 @@ public class myConnectionPP {
 
                 rst = st.executeQuery(sqlQuery);
 
-                //rst = st.executeQuery("SELECT * FROM " + table + " WHERE MONTH(" + clm + ") = " + m + " AND YEAR(" + clm + ")=" + y + " AND " + clm2 + "='" + ing + "' ");
+                // rst = st.executeQuery("SELECT * FROM " + table + " WHERE MONTH(" + clm + ") =
+                // " + m + " AND YEAR(" + clm + ")=" + y + " AND " + clm2 + "='" + ing + "' ");
                 // empty catch block
             } catch (SQLException ex) {
                 Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
@@ -377,7 +422,7 @@ public class myConnectionPP {
                 cnx = connecterDB();
             }
             st = cnx.createStatement();
-            //SELECT PU FROM stock WHERE ID ='1';
+            // SELECT PU FROM stock WHERE ID ='1';
             rst = st.executeQuery("SELECT " + clm + " FROM " + table + " WHERE " + clmID + " = " + ID);
             while (rst.next()) {
                 PU = rst.getString(clm);
@@ -396,7 +441,8 @@ public class myConnectionPP {
                 cnx = connecterDB();
             }
             st = cnx.createStatement();
-            rst = st.executeQuery("SELECT * FROM " + table + " WHERE MONTH(" + clm + ") = " + m + " AND YEAR(" + clm + ")=" + y);
+            rst = st.executeQuery(
+                    "SELECT * FROM " + table + " WHERE MONTH(" + clm + ") = " + m + " AND YEAR(" + clm + ")=" + y);
         } catch (SQLException sQLException) {
             // empty catch block
             Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, sQLException);
@@ -411,10 +457,12 @@ public class myConnectionPP {
                 cnx = connecterDB();
             }
             st = cnx.createStatement();
-            //SELECT * from bllocal where (`DateBon` BETWEEN '2021-07-01'AND '2021-08-29') 
-            String sql = "SELECT * from " + table + " where (`" + clm + "` BETWEEN '" + m + "'AND '" + y + "') AND " + clm2 + "='" + ing + "'";
+            // SELECT * from bllocal where (`DateBon` BETWEEN '2021-07-01'AND '2021-08-29')
+            String sql = "SELECT * from " + table + " where (`" + clm + "` BETWEEN '" + m + "'AND '" + y + "') AND "
+                    + clm2 + "='" + ing + "'";
             rst = st.executeQuery(sql);
-            //rst = st.executeQuery("SELECT * FROM " + table + " WHERE (" + clm + " BETWEEN  " + m + " AND " + y + ") AND " + clm2 + "='" + ing + "' ");
+            // rst = st.executeQuery("SELECT * FROM " + table + " WHERE (" + clm + " BETWEEN
+            // " + m + " AND " + y + ") AND " + clm2 + "='" + ing + "' ");
         } catch (SQLException sQLException) {
             Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, sQLException);
         }
@@ -427,10 +475,11 @@ public class myConnectionPP {
                 cnx = connecterDB();
             }
             st = cnx.createStatement();
-            //SELECT * from bllocal where (`DateBon` BETWEEN '2021-07-01'AND '2021-08-29') 
+            // SELECT * from bllocal where (`DateBon` BETWEEN '2021-07-01'AND '2021-08-29')
             String sql = "SELECT * from " + table + " where (`" + clm + "` BETWEEN '" + m + "'AND '" + y + "')";
             rst = st.executeQuery(sql);
-            //rst = st.executeQuery("SELECT * FROM " + table + " WHERE (" + clm + " BETWEEN  " + m + " AND " + y + ") AND " + clm2 + "='" + ing + "' ");
+            // rst = st.executeQuery("SELECT * FROM " + table + " WHERE (" + clm + " BETWEEN
+            // " + m + " AND " + y + ") AND " + clm2 + "='" + ing + "' ");
         } catch (SQLException sQLException) {
             Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, sQLException);
         }
@@ -457,7 +506,8 @@ public class myConnectionPP {
                 cnx = connecterDB();
             }
             st = cnx.createStatement();
-            rst = st.executeQuery("SELECT * FROM " + table + " WHERE " + clm + " = '" + d + "' AND " + clm + "='" + myclm + "'");
+            rst = st.executeQuery(
+                    "SELECT * FROM " + table + " WHERE " + clm + " = '" + d + "' AND " + clm + "='" + myclm + "'");
         } catch (SQLException sQLException) {
             // empty catch block
             System.err.println("ERROR SQL " + sQLException);
@@ -482,7 +532,7 @@ public class myConnectionPP {
         return rst;
     }
 
-    //SELECT SUM(PU) FROM stock 
+    // SELECT SUM(PU) FROM stock
     public static String Somme(String table, String clm) {
         String price = null;
         try {
@@ -508,11 +558,12 @@ public class myConnectionPP {
                 cnx = connecterDB();
             }
             st = cnx.createStatement();
-            //SELECT SUM(PT) FROM stock WHERE gamme='Medicament';
+            // SELECT SUM(PT) FROM stock WHERE gamme='Medicament';
 
             rst = st.executeQuery("SELECT SUM(" + clm + ") FROM " + table + " WHERE " + clm2 + " = '" + where + "'");
 
-            //  rst = st.executeQuery("SELECT SUM(" + clm + ") FROM  " + table +"WHERE "+ clm2+ " = ' "+where+" '");
+            // rst = st.executeQuery("SELECT SUM(" + clm + ") FROM " + table +"WHERE "+
+            // clm2+ " = ' "+where+" '");
             while (rst.next()) {
                 price = rst.getString(1);
             }
@@ -541,15 +592,17 @@ public class myConnectionPP {
         return price;
     }
 
-    public static String SelectStringFromTableWhereClmIs(String table, String clm, String nom, String targetTable, String clm2, String nlot) {
+    public static String SelectStringFromTableWhereClmIs(String table, String clm, String nom, String targetTable,
+            String clm2, String nlot) {
         String price = null;
         try {
             if (cnx == null) {
                 cnx = connecterDB();
             }
-            //SELECT `Quantite` FROM `stock` WHERE `DCI`='Pindolol';
+            // SELECT `Quantite` FROM `stock` WHERE `DCI`='Pindolol';
             st = cnx.createStatement();
-            rst = st.executeQuery("SELECT " + targetTable + " FROM  " + table + " where " + clm + "='" + nom + "' AND " + clm2 + " ='" + nlot + "'");
+            rst = st.executeQuery("SELECT " + targetTable + " FROM  " + table + " where " + clm + "='" + nom + "' AND "
+                    + clm2 + " ='" + nlot + "'");
 
             while (rst != null && rst.next()) {
                 price = rst.getString(1);
@@ -562,19 +615,50 @@ public class myConnectionPP {
         return price;
     }
 
-    public static void addPatient(String nom, String prenom, String sexe, LocalDate DateNaissance, int age, LocalDate DateConsult, String Resume) {
+    public static void addPatient(String nom, String prenom, String sexe, LocalDate DateNaissance, int age) {
         if (cnx == null) {
             cnx = connecterDB();
         }
         try {
-            String query = "insert into patients (nom,prenom,sexe,DateNaissance,age,DateConsultation,Resume) values('"
+            String query = "insert into patients (nom,prenom,sexe,DateNaissance,age) values('"
                     + nom + "','"
                     + prenom + "','"
                     + sexe + "','"
                     + DateNaissance + "','"
-                    + age + "','"
-                    + DateConsult + "','"
-                    + Resume + "' )";
+                    + age + "' )";
+            PreparedStatement ps = cnx.prepareStatement(query);
+            ps.execute();
+            passe = 1;
+        } catch (SQLException ex) {
+            Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public static void addConsultation(int IDPatient, LocalDate DateConsultation, String Motif, Double Prix) {
+        if (cnx == null) {
+            cnx = connecterDB();
+        }
+        try {
+            String query = "insert into consultation (IDPatient,DateConsultation,Motif,Prix) values('"
+                    + IDPatient + "','"
+                    + DateConsultation + "','"
+                    + Motif + "','"
+                    + Prix + "' )";
+            PreparedStatement ps = cnx.prepareStatement(query);
+            ps.execute();
+            passe = 1;
+        } catch (SQLException ex) {
+            Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public static void addordonnance(int IDConsultation) {
+        if (cnx == null) {
+            cnx = connecterDB();
+        }
+        try {
+            String query = "insert into ordonnance (IDConsultation) values('"
+                    + IDConsultation + "' )";
             PreparedStatement ps = cnx.prepareStatement(query);
             ps.execute();
             passe = 1;
@@ -601,38 +685,40 @@ public class myConnectionPP {
         }
         return lastEntry;
     }
+
     public static int createNewOrdonnance(int IDPatient) {
-    int IDOrdonnance = -1;
-    try {
-        if (cnx == null) {
-            cnx = connecterDB();
-        }
-        String query = "INSERT INTO ordonnances (IDPatient, Date) VALUES (?, NOW())";
-        PreparedStatement ps = cnx.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-        ps.setInt(1, IDPatient);
-        ps.executeUpdate();
+        int IDOrdonnance = -1;
+        try {
+            if (cnx == null) {
+                cnx = connecterDB();
+            }
+            String query = "INSERT INTO ordonnances (IDPatient, Date) VALUES (?, NOW())";
+            PreparedStatement ps = cnx.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, IDPatient);
+            ps.executeUpdate();
 
-        // Get the generated IDOrdonnance
-        ResultSet rs = ps.getGeneratedKeys();
-        if (rs.next()) {
-            IDOrdonnance = rs.getInt(1);
+            // Get the generated IDOrdonnance
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                IDOrdonnance = rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
         }
-    } catch (SQLException ex) {
-        Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
+        return IDOrdonnance;
     }
-    return IDOrdonnance;
-}
 
-    public static void addToOrdonnance(int IDPatient, String Article, int Quantite, String Detail) {
+    public static void addToOrdonnance(int IDOrdonnance, String Article, int Quantite, String Detail, String Forme) {
         if (cnx == null) {
             cnx = connecterDB();
         }
         try {
-            String query = "insert into ordonnance (IDPatient,Article,Quantite,Detail) values('"
-                    + IDPatient + "','"
+            String query = "insert into ligneordonance (IDOrdonnance,Article,Quantite,Detail,Forme) values('"
+                    + IDOrdonnance + "','"
                     + Article + "','"
                     + Quantite + "','"
-                    + Detail + "' )";
+                    + Detail + "','"
+                    + Forme + "' )";
             PreparedStatement ps = cnx.prepareStatement(query);
             ps.execute();
             passe = 1;
@@ -687,7 +773,8 @@ public class myConnectionPP {
         }
     }
 
-    public static void addNewPara(String table, String clm, JFXTextField mytext, StackPane rootStack, AnchorPane rootAnchor) {
+    public static void addNewPara(String table, String clm, JFXTextField mytext, StackPane rootStack,
+            AnchorPane rootAnchor) {
         passe = 0;
         String NB = mytext.getText();
         JFXButton btn = new JFXButton("OK");
@@ -715,8 +802,7 @@ public class myConnectionPP {
             showMaterialDialogError(rootStack, (Node) rootAnchor, Arrays.asList(new JFXButton[]{
                 btn
             }), ex2 + "", "ERREUR D'AJOUT");
-            btn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseevent
-                    -> {
+            btn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseevent -> {
 
             });
         }
@@ -815,7 +901,8 @@ public class myConnectionPP {
                 cnx = connecterDB();
             }
             st = cnx.createStatement();
-            String myQuery = "select * from " + from + " where " + close1 + " ='" + nom + "' and " + close2 + "='" + passowrd + "'";
+            String myQuery = "select * from " + from + " where " + close1 + " ='" + nom + "' and " + close2 + "='"
+                    + passowrd + "'";
             rst = st.executeQuery(myQuery);
         } catch (SQLException ex) {
             Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
@@ -841,7 +928,8 @@ public class myConnectionPP {
         passe = 0;
         SQLException e2 = null;
         try {
-            String query = "UPDATE " + from + " SET " + clmSet + "='" + whatSet + "' WHERE " + clmWhere + " = " + "'" + whatwhere + "'";
+            String query = "UPDATE " + from + " SET " + clmSet + "='" + whatSet + "' WHERE " + clmWhere + " = " + "'"
+                    + whatwhere + "'";
             if (cnx == null) {
                 cnx = connecterDB();
             }
@@ -860,7 +948,8 @@ public class myConnectionPP {
         }
     }
 
-    public static void editSettings2(String from, String clmSet, String whatSet, String clmSet2, String whatSet2, String clmWhere, String whatwhere) {
+    public static void editSettings2(String from, String clmSet, String whatSet, String clmSet2, String whatSet2,
+            String clmWhere, String whatwhere) {
         passe = 0;
         SQLException e2 = null;
         try {
@@ -887,24 +976,25 @@ public class myConnectionPP {
     }
 
     public static Connection connecterDB() {
-//        try {
-//            Class.forName("com.mysql.jdbc.Driver");
-//            //System.out.println("Driver oki");
-//            /*
-//            String url = "jdbc:mysql://sql151.main-hosting.eu.:3306/u708697835_gctes";
-//            String user = "u708697835_root";
-//            String password = "imgoingunder";*/
-//            String url = "jdbc:mysql://127.0.0.1:3306/mypharm";
-//            String user = "root";
-//            String password = "";
-//            Connection cnx = DriverManager.getConnection(url, user, password);
-//            System.out.println("Connexion bien établié");
-//            return cnx;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            JOptionPane.showMessageDialog(null, "VERIFIER VOTRE CONNEXION", "ERREUR", JOptionPane.ERROR_MESSAGE);
-//            return null;
-//        }
+        // try {
+        // Class.forName("com.mysql.jdbc.Driver");
+        // //System.out.println("Driver oki");
+        // /*
+        // String url = "jdbc:mysql://sql151.main-hosting.eu.:3306/u708697835_gctes";
+        // String user = "u708697835_root";
+        // String password = "imgoingunder";*/
+        // String url = "jdbc:mysql://127.0.0.1:3306/mypharm";
+        // String user = "root";
+        // String password = "";
+        // Connection cnx = DriverManager.getConnection(url, user, password);
+        // System.out.println("Connexion bien établié");
+        // return cnx;
+        // } catch (Exception e) {
+        // e.printStackTrace();
+        // JOptionPane.showMessageDialog(null, "VERIFIER VOTRE CONNEXION", "ERREUR",
+        // JOptionPane.ERROR_MESSAGE);
+        // return null;
+        // }
         try {
             Class.forName("com.mysql.jdbc.Driver");
             System.out.println("test data base" + testdatab);

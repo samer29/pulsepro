@@ -22,15 +22,14 @@ import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
-import static controllers.FirstWindowController.DateConsultationDate;
-import static controllers.FirstWindowController.HOVERED_BUTTON_STYLE;
-import static controllers.FirstWindowController.IDLE_BUTTON_STYLE;
-import static controllers.FirstWindowController.Nom;
-import static controllers.FirstWindowController.Prenom;
-import static controllers.FirstWindowController.Sexe;
-import static controllers.FirstWindowController.age;
-import static controllers.FirstWindowController.ordre;
-import static controllers.FirstWindowController.theme;
+import static controllers.ConsultationController.DateConsultationDate;
+import static controllers.FirstWindowPulseProController.HOVERED_BUTTON_STYLE;
+import static controllers.FirstWindowPulseProController.IDLE_BUTTON_STYLE;
+import static controllers.FirstWindowPulseProController.Nom;
+import static controllers.FirstWindowPulseProController.Prenom;
+import static controllers.FirstWindowPulseProController.Sexe;
+import static controllers.FirstWindowPulseProController.age;
+import static controllers.FirstWindowPulseProController.ordre;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.awt.Desktop;
@@ -40,7 +39,10 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -67,6 +69,7 @@ import tools.AlertMaker;
 import tools.LocalStorage;
 import static tools.PDFPrintingExample.printPDF;
 import tools.myConnectionPP;
+import static tools.myConnectionPP.LastEnterySQL;
 import static tools.myConnectionPP.addToExamen;
 import static tools.myConnectionPP.delete;
 import static tools.myConnectionPP.editCell;
@@ -132,11 +135,18 @@ public class OrdonExamController implements Initializable {
     private TableColumn clmDeleteExamen;
     ObservableList<Object> opt;
     String filename;
-    javafx.scene.image.Image imProfile = new javafx.scene.image.Image(getClass().getResourceAsStream("/icons/male.png"));
-    javafx.scene.image.Image imProfileFe = new javafx.scene.image.Image(getClass().getResourceAsStream("/icons/female.png"));
+    javafx.scene.image.Image imProfile = new javafx.scene.image.Image(
+            getClass().getResourceAsStream("/icons/male.png"));
+    javafx.scene.image.Image imProfileFe = new javafx.scene.image.Image(
+            getClass().getResourceAsStream("/icons/female.png"));
     @FXML
     private ImageView genderImageSR;
     int testprinting = 0;
+    @FXML
+    private JFXComboBox<?> comboFormeMedic;
+    public static int IDOrdonnace;
+    @FXML
+    private TableColumn clmFormeMedic;
 
     /**
      * Initializes the controller class.
@@ -149,15 +159,16 @@ public class OrdonExamController implements Initializable {
         fillDataExamens();
         SetTheme();
     }
-    public void SetTheme() {
-         LocalStorage storage = new LocalStorage();
 
-         String theme = storage.getData("mode", "daymode");
+    public void SetTheme() {
+        LocalStorage storage = new LocalStorage();
+
+        String theme = storage.getData("mode", "daymode");
         if (theme.equals("daymode")) {
-             rootStackPane.getStylesheets().remove("/css/pulseProthemeDARK.css");
+            rootStackPane.getStylesheets().remove("/css/pulseProthemeDARK.css");
             rootStackPane.getStylesheets().add("/css/pulseProtheme.css");
         } else {
-           rootStackPane.getStylesheets().remove("/css/pulseProtheme.css");
+            rootStackPane.getStylesheets().remove("/css/pulseProtheme.css");
             rootStackPane.getStylesheets().add("/css/pulseProthemeDARK.css");
         }
     }
@@ -175,9 +186,10 @@ public class OrdonExamController implements Initializable {
             genderImageSR.setImage(imProfileFe);
         }
         fillcombox(Arrays.asList("1", "2", "3", "4", "5", "6", "7"), comboQuantiteMedic, "1");
+        fillcombox(Arrays.asList("Boite(s)", "Flacon(s)", "Injection(s)", "Application(s)", "Suppo(s)"), comboFormeMedic, "Boite(s)");
         fillComboData(comboMedicam, "medicaments", "NomMed");
 
-//                    fillComboline(comboMedicam, "medicaments", "NomMed", opt);
+        // fillComboline(comboMedicam, "medicaments", "NomMed", opt);
         fillComboline(comboExamen, "listexamens", "Examen", opt);
 
     }
@@ -200,8 +212,7 @@ public class OrdonExamController implements Initializable {
             AlertMaker.showMaterialDialogError(rootStackPane, (Node) rootAnchorPane, Arrays.asList(new JFXButton[]{
                 btn
             }), "ERREUR D'AJOUT", myerrorMessage + "");
-            btn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseevent
-                    -> {
+            btn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseevent -> {
             });
         }
 
@@ -210,16 +221,17 @@ public class OrdonExamController implements Initializable {
     @FXML
     private void addNewMedic(MouseEvent event) {
         JFXButton btn = new JFXButton("OK");
-        String Article, detail;
-        int IDPatient, Quantite;
-        IDPatient = Integer.parseInt(LabelOrdre.getText());
+        String Article, detail, forme;
+        int Quantite;
         Article = comboMedicam.getSelectionModel().getSelectedItem().toString();
         Quantite = Integer.parseInt(comboQuantiteMedic.getSelectionModel().getSelectedItem().toString());
+        forme = comboFormeMedic.getSelectionModel().getSelectedItem().toString();
         detail = txtDetailMedic.getText();
         passe = 0;
-        
-        myConnectionPP.addToOrdonnance(IDPatient, Article, Quantite, detail);
+        IDOrdonnace = ConsultationController.IDConsultation;
+        myConnectionPP.addToOrdonnance(IDOrdonnace, Article, Quantite, detail, forme);
         fillDataTableMedic();
+        emptyDataMedicament();
 
         if (passe == 1) {
             myConnectionPP.checkfromDB("medicaments", "NomMed", Article);
@@ -228,35 +240,45 @@ public class OrdonExamController implements Initializable {
             AlertMaker.showMaterialDialogError(rootStackPane, (Node) rootAnchorPane, Arrays.asList(new JFXButton[]{
                 btn
             }), "ERREUR D'AJOUT", ex2 + "");
-            btn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseevent
-                    -> {
+            btn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseevent -> {
             });
         }
 
     }
 
     public void fillDataTableMedic() {
-
-        String id = LabelOrdre.getText();
+        System.out.println("ID ORDONNANCE " + IDOrdonnace);
         tableOrdonance.setEditable(true);
-
+        String id = String.valueOf(IDOrdonnace);
         fillculms(clmID, 0);
         fillculms(clmMedicament, 2);
         fillculms(clmQuantite, 3);
-        fillculms(clmDetailMedic, 4);
+        fillculms(clmFormeMedic, 4);
+        fillculms(clmDetailMedic, 5);
 
-        fillTableWithConditionASCENDING("ordonnance", "IDPatient", id, tableOrdonance, 5, clmID);
+        fillTableWithConditionASCENDING("ligneordonance", "IDOrdonnance", id, tableOrdonance, 6, clmID);
 
         clmMedicament.setCellFactory(TextFieldTableCell.forTableColumn());
-        clmMedicament.setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event, "Article", "ordonnance", "ID"));
+        clmMedicament
+                .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
+                        "Article", "ligneordonance", "ID"));
 
         clmQuantite.setCellFactory(TextFieldTableCell.forTableColumn());
-        clmQuantite.setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event, "Quantite", "ordonnance", "ID"));
+        clmQuantite
+                .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
+                        "Quantite", "ligneordonance", "ID"));
 
         clmDetailMedic.setCellFactory(TextFieldTableCell.forTableColumn());
-        clmDetailMedic.setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event, "Detail", "ordonnance", "ID"));
+        clmDetailMedic
+                .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
+                        "Detail", "ligneordonance", "ID"));
+        clmFormeMedic.setCellFactory(TextFieldTableCell.forTableColumn());
+        clmFormeMedic
+                .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
+                        "Forme", "ligneordonance", "ID"));
 
-        clmDeleteMedic.setCellFactory((Callback) new Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>() {
+        clmDeleteMedic.setCellFactory(
+                (Callback) new Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>() {
             public TableCell<ObservableList, String> call(TableColumn<ObservableList, String> param) {
                 return new DeleteButtonCellStock();
             }
@@ -272,9 +294,11 @@ public class OrdonExamController implements Initializable {
         fillTableWithConditionASCENDING("examenprescrit", "IDPatient", id, tableExamens, 3, clmIDExamen);
 
         clmExamen.setCellFactory(TextFieldTableCell.forTableColumn());
-        clmExamen.setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event, "Examen", "examenprescrit", "ID"));
+        clmExamen.setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
+                "Examen", "examenprescrit", "ID"));
 
-        clmDeleteExamen.setCellFactory((Callback) new Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>() {
+        clmDeleteExamen.setCellFactory(
+                (Callback) new Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>() {
             public TableCell<ObservableList, String> call(TableColumn<ObservableList, String> param) {
                 return new DeleteButtonExamen();
             }
@@ -286,8 +310,7 @@ public class OrdonExamController implements Initializable {
         try {
             JFXButton btn = new JFXButton("OK");
 
-            String id = LabelOrdre.getText();
-            filename = "reports/ordonnance/ordonnance_N" + id + ".pdf";
+            filename = "reports/ordonnance/ordonnance_N" + IDOrdonnace + ".pdf";
 
             // Create a new PDF document
             Document mydoc = new Document(PageSize.A5, 30, 30, 30, 30);
@@ -332,23 +355,28 @@ public class OrdonExamController implements Initializable {
 
             // Add patient information
             BaseFont baseFont = BaseFont.createFont("fonts/Roboto.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-            BaseFont baseFont2 = BaseFont.createFont("fonts/azonix.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            BaseFont baseFont2 = BaseFont.createFont("fonts/Akzidenk.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 
             Font customFont = new Font(baseFont, 10, Font.NORMAL);
             Font bold = new Font(baseFont, 10, Font.BOLD);
             Font headerFont = new Font(baseFont2, 16, Font.NORMAL);
 
-            Chunk chunkNum = new Chunk("Le : ", customFont);
-            Chunk chunkBLNumDetail = new Chunk(DateConsultationDate, bold);
-            Chunk chunkBLDate = new Chunk("Sexe :", customFont);
-            Chunk chunkBLDateDetail = new Chunk(Sexe, bold);
+            Chunk chunkNum = new Chunk("MASCARA Le : ", customFont);
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy");
+            Date date = inputFormat.parse(DateConsultationDate);
+            String formattedDate = outputFormat.format(date);
+            Chunk chunkBLNumDetail = new Chunk(formattedDate, bold);
 
             Phrase PhraseBLDateService = new Phrase();
             PhraseBLDateService.add(chunkNum);
             PhraseBLDateService.add(chunkBLNumDetail);
-            PhraseBLDateService.add(new Chunk("                                                              ")); // Adjust the number of spaces as needed
-            PhraseBLDateService.add(chunkBLDate);
-            PhraseBLDateService.add(chunkBLDateDetail);
+            // the
+            // number
+            // of
+            // spaces
+            // as
+            // needed
 
             Paragraph ParaBlDateService = new Paragraph();
             ParaBlDateService.add(PhraseBLDateService);
@@ -372,34 +400,21 @@ public class OrdonExamController implements Initializable {
             ParaNomPrenomAge.add(PhraseNomPrenom);
             ParaNomPrenomAge.setAlignment(Paragraph.ALIGN_LEFT);
 
-           
-            Chunk chunkNOrdonance = new Chunk("N° Ordonance :", customFont);
-            Chunk chunkNOrdonanceDetail = new Chunk(id, bold);
-
-            Phrase PhraseAdresse = new Phrase();
-            PhraseAdresse.add(chunkNOrdonance);
-            PhraseAdresse.add(chunkNOrdonanceDetail);
-
-            Paragraph ParaAdresse = new Paragraph();
-            ParaAdresse.add(PhraseAdresse);
-            ParaAdresse.setAlignment(Paragraph.ALIGN_LEFT);
-
             LineSeparator ls = new LineSeparator();
             mydoc.add(new Chunk(ls));
             mydoc.add((Element) ParaBlDateService);
             mydoc.add((Element) ParaNomPrenomAge);
-            mydoc.add((Element) ParaAdresse);
 
             mydoc.add(new Chunk(ls));
             Paragraph paragraphHeader = new Paragraph("ORDONNANCE", headerFont);
             paragraphHeader.setAlignment(Paragraph.ALIGN_CENTER);
             mydoc.add((Element) paragraphHeader);
 
-            ResultSet rs = inst3("ordonnance", "IDPatient", id);
+            ResultSet rs = inst3("ligneordonance", "IDOrdonnance", IDOrdonnace + "");
 
             PdfPTable table = new PdfPTable(3);
             table.setSpacingBefore(30f);
-            table.setTotalWidth(new float[]{30f, 280F, 60f}); // Set column widths
+            table.setTotalWidth(new float[]{30f, 230f, 100f}); // Set balanced column widths
             table.setLockedWidth(true); // Lock the width of the table
 
             int rowCount = 0;
@@ -413,20 +428,27 @@ public class OrdonExamController implements Initializable {
                 cell.setPaddingBottom(10f); // Add space after each row
                 table.addCell(cell);
 
-                // Add Article and Detail cell
-                cell = new PdfPCell(new Phrase(rs.getString("article") + " - " + rs.getString("detail"), customFont));
+                // Add Article and Detail (with Detail on a new line and Forme next to it)
+                String article = rs.getString("article");
+                String detail = rs.getString("detail");
+                String forme = rs.getString("Forme");
+
+                String articleDetail = article + "\n\n                          \t\t\t\t\t" + detail; // Concatenate with newline and Forme
+
+                cell = new PdfPCell(new Phrase(articleDetail, customFont));
                 cell.setBorder(PdfPCell.NO_BORDER); // Remove border
                 cell.setPaddingBottom(10f); // Add space after each row
 
                 table.addCell(cell);
 
                 // Add Quantite cell
-                cell = new PdfPCell(new Phrase(rs.getString("Quantite"), customFont));
+                cell = new PdfPCell(new Phrase(rs.getString("Quantite") + " - " + forme, customFont));
                 cell.setBorder(PdfPCell.NO_BORDER); // Remove border
                 cell.setPaddingBottom(10f); // Add space after each row
 
                 table.addCell(cell);
             }
+
             mydoc.add(table);
 
             FooterImage event2 = new FooterImage("src/icons/footerPulsePro.jpg");
@@ -439,8 +461,7 @@ public class OrdonExamController implements Initializable {
             AlertMaker.showMaterialDialog(this.rootStackPane, this.rootAnchorPane, Arrays.asList(new JFXButton[]{
                 btn
             }), null, "PDF généré avec succès");
-            btn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseevent
-                    -> {
+            btn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseevent -> {
                 // Open the PDF file
                 File file = new File(this.filename);
 
@@ -457,6 +478,8 @@ public class OrdonExamController implements Initializable {
             });
 
         } catch (DocumentException | IOException | SQLException ex) {
+            Logger.getLogger(OrdonExamController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
             Logger.getLogger(OrdonExamController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -535,23 +558,22 @@ public class OrdonExamController implements Initializable {
 
             // Add patient information
             BaseFont baseFont = BaseFont.createFont("fonts/Roboto.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-            BaseFont baseFont2 = BaseFont.createFont("fonts/azonix.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            BaseFont baseFont2 = BaseFont.createFont("fonts/Akzidenk.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 
             Font customFont = new Font(baseFont, 10, Font.NORMAL);
             Font bold = new Font(baseFont, 10, Font.BOLD);
             Font headerFont = new Font(baseFont2, 16, Font.NORMAL);
 
-            Chunk chunkNum = new Chunk("Le : ", customFont);
-            Chunk chunkBLNumDetail = new Chunk(DateConsultationDate, bold);
-            Chunk chunkBLDate = new Chunk("Sexe :", customFont);
-            Chunk chunkBLDateDetail = new Chunk(Sexe, bold);
+            Chunk chunkNum = new Chunk("MASCARA Le : ", customFont);
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy");
+            Date date = inputFormat.parse(DateConsultationDate);
+            String formattedDate = outputFormat.format(date);
+            Chunk chunkBLNumDetail = new Chunk(formattedDate, bold);
 
             Phrase PhraseBLDateService = new Phrase();
             PhraseBLDateService.add(chunkNum);
             PhraseBLDateService.add(chunkBLNumDetail);
-            PhraseBLDateService.add(new Chunk("                                                              ")); // Adjust the number of spaces as needed
-            PhraseBLDateService.add(chunkBLDate);
-            PhraseBLDateService.add(chunkBLDateDetail);
 
             Paragraph ParaBlDateService = new Paragraph();
             ParaBlDateService.add(PhraseBLDateService);
@@ -575,16 +597,7 @@ public class OrdonExamController implements Initializable {
             ParaNomPrenomAge.add(PhraseNomPrenom);
             ParaNomPrenomAge.setAlignment(Paragraph.ALIGN_LEFT);
 
-          
-            Chunk chunkNOrdonance = new Chunk("N° Examen :", customFont);
-            Chunk chunkNOrdonanceDetail = new Chunk(id, bold);
-
-            Phrase PhraseAdresse = new Phrase();
-            PhraseAdresse.add(chunkNOrdonance);
-            PhraseAdresse.add(chunkNOrdonanceDetail);
-
             Paragraph ParaAdresse = new Paragraph();
-            ParaAdresse.add(PhraseAdresse);
             ParaAdresse.setAlignment(Paragraph.ALIGN_LEFT);
 
             LineSeparator ls = new LineSeparator();
@@ -636,11 +649,9 @@ public class OrdonExamController implements Initializable {
             AlertMaker.showMaterialDialog(this.rootStackPane, this.rootAnchorPane, Arrays.asList(new JFXButton[]{
                 btn
             }), null, "PDF généré avec succès");
-            btn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseevent
-                    -> {
+            btn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseevent -> {
                 // Open the PDF file
                 File file = new File(this.filename);
-                printPDF(filename);
                 try {
                     if (testprinting == 1) {
                         printPDF(filename);
@@ -654,8 +665,16 @@ public class OrdonExamController implements Initializable {
 
         } catch (DocumentException | IOException | SQLException ex) {
             Logger.getLogger(OrdonExamController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(OrdonExamController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+
+    private void emptyDataMedicament() {
+        fillComboData(comboMedicam, "medicaments", "NomMed");
+        txtDetailMedic.setText(null);
+        fillcombox(Arrays.asList("1", "2", "3", "4", "5", "6", "7"), comboQuantiteMedic, "1");
     }
 
     private class DeleteButtonCellStock extends TableCell<ObservableList, String> {
@@ -683,7 +702,8 @@ public class OrdonExamController implements Initializable {
                 cellButton2.setOnAction((EventHandler) new EventHandler<ActionEvent>() {
 
                     public void handle(ActionEvent t2) {
-                        ObservableList rowList = (ObservableList) tableOrdonance.getItems().get(DeleteButtonCellStock.this.getIndex());
+                        ObservableList rowList = (ObservableList) tableOrdonance.getItems()
+                                .get(DeleteButtonCellStock.this.getIndex());
                         String ID = null;
                         ID = rowList.get(0).toString();
                         delete(ID, "ordonnance", "ID");
@@ -722,7 +742,8 @@ public class OrdonExamController implements Initializable {
                 cellButton2.setOnAction((EventHandler) new EventHandler<ActionEvent>() {
 
                     public void handle(ActionEvent t2) {
-                        ObservableList rowList = (ObservableList) tableExamens.getItems().get(DeleteButtonExamen.this.getIndex());
+                        ObservableList rowList = (ObservableList) tableExamens.getItems()
+                                .get(DeleteButtonExamen.this.getIndex());
                         String ID = null;
                         ID = rowList.get(0).toString();
                         delete(ID, "examenprescrit", "ID");
@@ -737,7 +758,8 @@ public class OrdonExamController implements Initializable {
         }
     }
 
-    public void editCommit(TableColumn.CellEditEvent<ObservableList<String>, String> event, String clm, String table, String id2) {
+    public void editCommit(TableColumn.CellEditEvent<ObservableList<String>, String> event, String clm, String table,
+            String id2) {
         ObservableList<String> rowValue = event.getRowValue();
         String id = rowValue.get(0);
         String DCI = event.getNewValue();

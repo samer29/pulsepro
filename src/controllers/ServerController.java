@@ -17,7 +17,6 @@ import javafx.scene.layout.StackPane;
 import static tools.myFunctionsPP.closeStage;
 import static tools.myFunctionsPP.writefile;
 
-
 /**
  * FXML Controller class
  *
@@ -25,7 +24,7 @@ import static tools.myFunctionsPP.writefile;
  */
 public class ServerController implements Initializable {
 
-   public static String testdatab;
+    public static String testdatab;
     @FXML
     private AnchorPane rootAnchorPane;
     @FXML
@@ -51,7 +50,7 @@ public class ServerController implements Initializable {
         if (radioOnline.isSelected()) {
             testdatab = "Online";
         }
-        writefile("test.dat", testdatab,rootStackPane,rootAnchorPane);
+        writefile("test.dat", testdatab, rootStackPane, rootAnchorPane);
         closeStage(rootAnchorPane);
     }
 
@@ -74,5 +73,5 @@ public class ServerController implements Initializable {
         radioOffline.setSelected(false);
         radioOnline.setSelected(true);
     }
-    
+
 }
