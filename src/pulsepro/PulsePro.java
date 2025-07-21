@@ -8,7 +8,6 @@ package pulsepro;
 import controllers.ServerController;
 import java.util.List;
 import javafx.application.Application;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import static tools.myFunctionsPP.loadWindow;
 import static tools.myFunctionsPP.outpoutstring;
@@ -21,7 +20,8 @@ public class PulsePro extends Application {
     @Override
     public void start(Stage stage) {
         try {
-            // Font.loadFont(getClass().getResource("C:\\Users\\Samer\\Documents\\NetBeansProjects\\myPharm\\src\\fonts\\Roboto.ttf").toExternalForm(), 12);
+            // Font.loadFont(getClass().getResource("C:\\Users\\Samer\\Documents\\NetBeansProjects\\myPharm\\src\\fonts\\Roboto.ttf").toExternalForm(),
+            // 12);
             loadWindow(getClass().getResource("FXMLDocument.fxml"), "PulsePro", null, "no");
 
             testdatabase();

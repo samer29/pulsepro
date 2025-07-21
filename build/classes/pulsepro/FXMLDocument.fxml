@@ -21,7 +21,7 @@
                <children>
                   <VBox alignment="CENTER" prefHeight="423.0" prefWidth="314.0">
                      <children>
-                        <ImageView fitHeight="141.0" fitWidth="280.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="248.0" fitWidth="253.0" pickOnBounds="true" preserveRatio="true">
                            <VBox.margin>
                               <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                            </VBox.margin>
@@ -29,7 +29,7 @@
                               <Image url="@../icons/logo.png" />
                            </image>
                         </ImageView>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="labelMain" text="PulsePro , Created and developed by Samer Elouissi" wrappingWidth="267.1249694824219">
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="labelMain" text="Mediconnect, Created and developed by Samer Elouissi" wrappingWidth="267.1249694824219">
                            <VBox.margin>
                               <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                            </VBox.margin>

@@ -46,11 +46,11 @@ public class FXMLDocumentController implements Initializable {
     @FXML
     private FontAwesomeIconView minuswindow;
     public static String usernameLG;
+    public static String role;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        txtusername.setText("samer");
-        txtpsw.setText("samer");
+  
     }
 
     @FXML
@@ -63,6 +63,8 @@ public class FXMLDocumentController implements Initializable {
                         txtpsw.getText());
                 if (rs.next()) {
                     loadfadestage(1000, this.rootAnchorPane, "/views/viewFirstWindow.fxml", "", "yes");
+                    role = rs.getString("role");
+                    System.out.println("Role "+role);
                 } else {
                     txtusername.getStyleClass().add("wrong-enteries");
                     txtpsw.getStyleClass().add("wrong-enteries");

@@ -22,14 +22,14 @@
    <children>
       <AnchorPane id="AnchorPane" fx:id="rootAnchorPane" prefHeight="400.0" prefWidth="600.0">
          <children>
-            <VBox alignment="CENTER" layoutX="40.0" layoutY="60.0" maxWidth="0.0" prefHeight="506.0" prefWidth="186.0" styleClass="hbox" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="40.0">
+            <VBox alignment="CENTER" layoutX="40.0" layoutY="80.0" maxWidth="171.0" prefHeight="559.0" prefWidth="171.0" styleClass="hbox" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="60.0">
                <children>
                   <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../icons/logo.png" />
                      </image>
                   </ImageView>
-                  <JFXButton onAction="#OnPatientsClicked" prefWidth="130.0" text="Patients">
+                  <JFXButton fx:id="btnPatient" onAction="#OnPatientsClicked" prefWidth="130.0" text="Patients">
                      <VBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                      </VBox.margin>
@@ -37,7 +37,7 @@
                         <FontAwesomeIconView glyphName="GROUP" size="20" />
                      </graphic>
                   </JFXButton>
-                  <JFXButton layoutX="12.0" layoutY="12.0" onAction="#OnAddCliqued" prefHeight="33.0" prefWidth="130.0" text="Ajouter ">
+                  <JFXButton fx:id="btnAddPatient" layoutX="12.0" layoutY="12.0" onAction="#OnAddCliqued" prefHeight="33.0" prefWidth="130.0" text="Ajouter ">
                      <VBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                      </VBox.margin>
@@ -45,7 +45,7 @@
                         <FontAwesomeIconView glyphName="PLUS_CIRCLE" size="20" />
                      </graphic>
                   </JFXButton>
-                  <JFXButton layoutX="12.0" layoutY="12.0" onAction="#OnOrdonCliqued" prefHeight="33.0" prefWidth="130.0" text="Consultations">
+                  <JFXButton fx:id="btnConsultation" layoutX="12.0" layoutY="12.0" onAction="#OnOrdonCliqued" prefHeight="33.0" prefWidth="130.0" text="Consultations">
                      <VBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                      </VBox.margin>
@@ -53,7 +53,7 @@
                         <FontAwesomeIconView glyphName="COPY" size="20" />
                      </graphic>
                   </JFXButton>
-                  <JFXButton layoutX="12.0" layoutY="44.0" onAction="#settings" prefWidth="130.0" text="Parametres">
+                  <JFXButton fx:id="btnSettings" layoutX="12.0" layoutY="44.0" onAction="#settings" prefWidth="130.0" text="Parametres">
                      <VBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                      </VBox.margin>
@@ -61,7 +61,7 @@
                         <FontAwesomeIconView glyphName="COGS" size="20" />
                      </graphic>
                   </JFXButton>
-                  <JFXButton layoutX="47.0" layoutY="374.0" onAction="#onAboutUsClicked" prefWidth="130.0" text="A Propos !">
+                  <JFXButton fx:id="bntAbout" layoutX="47.0" layoutY="374.0" onAction="#onAboutUsClicked" prefWidth="130.0" text="A Propos !">
                      <graphic>
                         <FontAwesomeIconView glyphName="INFO_CIRCLE" size="20" />
                      </graphic>
@@ -302,7 +302,7 @@
                                     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                  </VBox.margin>
                               </Circle>
-                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="labelMain" text="Pulse Pro V .2.1.1 created and devlopped by Samer Elouissi" wrappingWidth="285.33673095703125">
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="labelMain" text="Mediconnect V .2.1.1 created and devlopped by Samer Elouissi" wrappingWidth="285.33673095703125">
                                  <VBox.margin>
                                     <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                  </VBox.margin>

@@ -49,6 +49,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import static pulsepro.FXMLDocumentController.role;
 import tools.AlertMaker;
 import tools.LocalStorage;
 import static tools.PDFPrintingExample.printPDF;
@@ -175,6 +176,16 @@ public class FirstWindowPulseProController implements Initializable {
     private TableColumn clmDeleteOrdonanance;
     @FXML
     private JFXButton btnEditConsultation;
+    @FXML
+    private JFXButton btnPatient;
+    @FXML
+    private JFXButton btnAddPatient;
+    @FXML
+    private JFXButton btnConsultation;
+    @FXML
+    private JFXButton btnSettings;
+    @FXML
+    private JFXButton bntAbout;
 
     /**
      * Initializes the controller class.
@@ -186,6 +197,7 @@ public class FirstWindowPulseProController implements Initializable {
         OnlyIntegersForTextField(txtAgeAddPati);
         fillDataPatients();
         deadline();
+        showandhide();
         PanePatients.setOpacity(1);
         PaneAjouterPatient.setOpacity(0);
         PaneOrdonances.setOpacity(0);
@@ -196,6 +208,21 @@ public class FirstWindowPulseProController implements Initializable {
 
         fillcombox(Arrays.asList("HOMME", "FEMME"), comboSexeAddPati, "HOMME");
         SetTheme();
+    }
+
+    public void showandhide() {
+        if ("medecin".equals(role)) {
+            btnConsultation.setDisable(false);
+            btnEditConsultation.setDisable(false);
+            btnOrdonance.setDisable(false);
+            btnSettings.setDisable(false);
+        }
+        if ("assistante".equals(role)) {
+            btnConsultation.setDisable(true);
+            btnEditConsultation.setDisable(true);
+            btnOrdonance.setDisable(true);
+            btnSettings.setDisable(true);
+        }
     }
 
     public void SetTheme() {
@@ -272,27 +299,27 @@ public class FirstWindowPulseProController implements Initializable {
         clmNomPatients.setCellFactory(TextFieldTableCell.forTableColumn());
         clmNomPatients
                 .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
-                        "nom", "patients", "ID"));
+                "nom", "patients", "ID"));
 
         clmPrenomPatient.setCellFactory(TextFieldTableCell.forTableColumn());
         clmPrenomPatient
                 .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
-                        "Prenom", "patients", "ID"));
+                "Prenom", "patients", "ID"));
 
         clmSexePatients.setCellFactory(TextFieldTableCell.forTableColumn());
         clmSexePatients
                 .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
-                        "sexe", "patients", "ID"));
+                "sexe", "patients", "ID"));
 
         clmDateNaissancePatients.setCellFactory(TextFieldTableCell.forTableColumn());
         clmDateNaissancePatients
                 .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
-                        "DateNaissance", "patients", "ID"));
+                "DateNaissance", "patients", "ID"));
 
         clmAgePatients.setCellFactory(TextFieldTableCell.forTableColumn());
         clmAgePatients
                 .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
-                        "age", "patients", "ID"));
+                "age", "patients", "ID"));
 
         clmDeletePatients.setCellFactory(
                 (Callback) new Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>() {
@@ -343,7 +370,11 @@ public class FirstWindowPulseProController implements Initializable {
 
     @FXML
     private void EnableOrdonance(MouseEvent event) {
-        btnOrdonance.setDisable(false);
+        if (role.equals("medecin")) {
+            btnOrdonance.setDisable(false);
+        } else {
+            btnOrdonance.setDisable(true);
+        }
     }
 
     @FXML
@@ -462,7 +493,7 @@ public class FirstWindowPulseProController implements Initializable {
     }
 
     public void fillCircleWithImage() {
-        InputStream in = getClass().getResourceAsStream("/icons/dev_pic.png");
+        InputStream in = getClass().getResourceAsStream("/icons/logo.png");
         if (in != null) {
             Image imgUsr = new Image(in);
             about_us_pic.setFill(new ImagePattern(imgUsr));
@@ -504,7 +535,13 @@ public class FirstWindowPulseProController implements Initializable {
         fillDataForligneOrdonnance();
         btnPrintOrdonances.setDisable(false);
         btnVisualiserOrdonance.setDisable(false);
-        btnEditConsultation.setDisable(false);
+        if (role.equals("medecin")) {
+            btnEditConsultation.setDisable(false);
+        } else {
+            btnEditConsultation.setDisable(true);
+
+        }
+
     }
 
     @FXML
@@ -518,12 +555,12 @@ public class FirstWindowPulseProController implements Initializable {
                 Prenom = rs.getString("prenom");
                 Sexe = rs.getString("sexe");
                 age = rs.getInt("age");
-                DateConsultationDate=rs.getString("DateConsultation");
+                DateConsultationDate = rs.getString("DateConsultation");
             }
         } catch (SQLException ex) {
             Logger.getLogger(FirstWindowPulseProController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("Nom: " + Nom + " Prenom: " + Prenom + " Age: " + age + " Sexe: " + Sexe+"DateConsultation "+DateConsultationDate);
+        System.out.println("Nom: " + Nom + " Prenom: " + Prenom + " Age: " + age + " Sexe: " + Sexe + "DateConsultation " + DateConsultationDate);
         loadWindow(this.getClass().getResource("/views/viewOrdonExam.fxml"), "Crée une Ordonnance ", stage, "no");
     }
 
@@ -773,7 +810,7 @@ public class FirstWindowPulseProController implements Initializable {
         }
     }
 
-    public void editCommit(TableColumn.CellEditEvent<ObservableList<String>, String> event, String clm, String table,String id2) {
+    public void editCommit(TableColumn.CellEditEvent<ObservableList<String>, String> event, String clm, String table, String id2) {
         ObservableList<String> rowValue = event.getRowValue();
         String id = rowValue.get(0);
         String DCI = event.getNewValue();
@@ -781,7 +818,7 @@ public class FirstWindowPulseProController implements Initializable {
         fillDataPatients();
     }
 
-    public void editCommitOrdonnances(TableColumn.CellEditEvent<ObservableList<String>, String> event, String clm,String table, String id2) {
+    public void editCommitOrdonnances(TableColumn.CellEditEvent<ObservableList<String>, String> event, String clm, String table, String id2) {
         ObservableList<String> rowValue = event.getRowValue();
         String id = rowValue.get(0);
         String DCI = event.getNewValue();
@@ -848,9 +885,10 @@ public class FirstWindowPulseProController implements Initializable {
         txtPrenoAddPati.setText(null);
         txtAgeAddPati.setText(null);
         txtDateNaissanceAddPati.setValue(null);
+        if(role.equals("medecin")){
         loadWindow(this.getClass().getResource("/views/viewConsultation.fxml"), "Crée une Consultation", stage, "no");
+        }
         System.out.println("Last Entery" + ordre);
-
     }
 
     @FXML
