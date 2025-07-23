@@ -361,7 +361,7 @@ public class OrdonExamController implements Initializable {
             Font bold = new Font(baseFont, 10, Font.BOLD);
             Font headerFont = new Font(baseFont2, 16, Font.NORMAL);
 
-            Chunk chunkNum = new Chunk("MASCARA Le : ", customFont);
+            Chunk chunkNum = new Chunk("Mohammadia Le : ", customFont);
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy");
             Date date = inputFormat.parse(DateConsultationDate);
@@ -564,7 +564,7 @@ public class OrdonExamController implements Initializable {
             Font bold = new Font(baseFont, 10, Font.BOLD);
             Font headerFont = new Font(baseFont2, 16, Font.NORMAL);
 
-            Chunk chunkNum = new Chunk("MASCARA Le : ", customFont);
+            Chunk chunkNum = new Chunk("Mohammadia Le : ", customFont);
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy");
             Date date = inputFormat.parse(DateConsultationDate);

@@ -14,6 +14,7 @@ import static controllers.OrdonExamController.IDOrdonnace;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
+import javafx.scene.media.AudioClip;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +27,9 @@ import java.util.Arrays;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -49,6 +53,7 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.Duration;
 import static pulsepro.FXMLDocumentController.role;
 import tools.AlertMaker;
 import tools.LocalStorage;
@@ -186,12 +191,18 @@ public class FirstWindowPulseProController implements Initializable {
     private JFXButton btnSettings;
     @FXML
     private JFXButton bntAbout;
+    private int lastPatientCount = -1; // Will store row count after each check
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        Timeline refreshTimeline = new Timeline(
+                new KeyFrame(Duration.minutes(3), event -> fillDataPatients())
+        );
+        refreshTimeline.setCycleCount(Animation.INDEFINITE);
+        refreshTimeline.play();
 
         // myConnectionPP.readfromfileandinsertintoDb();
         OnlyIntegersForTextField(txtAgeAddPati);
@@ -208,6 +219,27 @@ public class FirstWindowPulseProController implements Initializable {
 
         fillcombox(Arrays.asList("HOMME", "FEMME"), comboSexeAddPati, "HOMME");
         SetTheme();
+    }
+
+    private void playNotificationSound() {
+        String soundPath = getClass().getResource("/sounds/notification.wav").toString();
+        AudioClip notificationSound = new AudioClip(soundPath);
+        notificationSound.play();
+    }
+
+    private int getPatientRowCount() {
+        ResultSet rs = myConnectionPP.instCount("patients");
+        try {
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                System.out.println("Patient count: " + count);
+                return count;
+            }
+
+        } catch (SQLException ex) {
+            System.err.println("Error getting patient count: " + ex.getMessage());
+        }
+        return 0;
     }
 
     public void showandhide() {
@@ -288,6 +320,23 @@ public class FirstWindowPulseProController implements Initializable {
     @FXML
     public void fillDataPatients() {
         TablePatients.setEditable(true);
+        int currentCount = getPatientRowCount();
+
+        System.out.println("Last count: " + lastPatientCount);
+        System.out.println("Current count: " + currentCount);
+
+        if (lastPatientCount != -1 && currentCount > lastPatientCount) {
+            playNotificationSound();
+            System.out.println("I m here RING ");
+        }
+        lastPatientCount = currentCount;
+
+        // Clear the existing data (to avoid duplicates on refresh)
+        if (data != null) {
+            data.clear();
+        }
+
+        // Set up columns
         fillculms(clmOrdrePatient, 0);
         fillculms(clmNomPatients, 1);
         fillculms(clmPrenomPatient, 2);
@@ -295,38 +344,43 @@ public class FirstWindowPulseProController implements Initializable {
         fillculms(clmDateNaissancePatients, 4);
         fillculms(clmAgePatients, 5);
 
-        // Here for editing Stock
+        // Editable columns
         clmNomPatients.setCellFactory(TextFieldTableCell.forTableColumn());
-        clmNomPatients
-                .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
-                "nom", "patients", "ID"));
+        clmNomPatients.setOnEditCommit(event
+                -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
+                        "nom", "patients", "ID")
+        );
 
         clmPrenomPatient.setCellFactory(TextFieldTableCell.forTableColumn());
-        clmPrenomPatient
-                .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
-                "Prenom", "patients", "ID"));
+        clmPrenomPatient.setOnEditCommit(event
+                -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
+                        "Prenom", "patients", "ID")
+        );
 
         clmSexePatients.setCellFactory(TextFieldTableCell.forTableColumn());
-        clmSexePatients
-                .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
-                "sexe", "patients", "ID"));
+        clmSexePatients.setOnEditCommit(event
+                -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
+                        "sexe", "patients", "ID")
+        );
 
         clmDateNaissancePatients.setCellFactory(TextFieldTableCell.forTableColumn());
-        clmDateNaissancePatients
-                .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
-                "DateNaissance", "patients", "ID"));
+        clmDateNaissancePatients.setOnEditCommit(event
+                -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
+                        "DateNaissance", "patients", "ID")
+        );
 
         clmAgePatients.setCellFactory(TextFieldTableCell.forTableColumn());
-        clmAgePatients
-                .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
-                "age", "patients", "ID"));
+        clmAgePatients.setOnEditCommit(event
+                -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
+                        "age", "patients", "ID")
+        );
 
         clmDeletePatients.setCellFactory(
-                (Callback) new Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>() {
-            public TableCell<ObservableList, String> call(TableColumn<ObservableList, String> param) {
-                return new DeleteButtonCellStock();
-            }
-        });
+                (Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>) param
+                -> new DeleteButtonCellStock()
+        );
+
+        // Fill or refresh the table data
         fillTableSortedByIDASCENDING(data, TablePatients, "patients", 1, 6, clmOrdrePatient);
     }
 
@@ -885,8 +939,8 @@ public class FirstWindowPulseProController implements Initializable {
         txtPrenoAddPati.setText(null);
         txtAgeAddPati.setText(null);
         txtDateNaissanceAddPati.setValue(null);
-        if(role.equals("medecin")){
-        loadWindow(this.getClass().getResource("/views/viewConsultation.fxml"), "Crée une Consultation", stage, "no");
+        if (role.equals("medecin")) {
+            loadWindow(this.getClass().getResource("/views/viewConsultation.fxml"), "Crée une Consultation", stage, "no");
         }
         System.out.println("Last Entery" + ordre);
     }

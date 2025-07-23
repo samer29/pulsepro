@@ -34,6 +34,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import static tools.AlertMaker.showMaterialDialog;
 import static tools.AlertMaker.showMaterialDialogError;
+import static tools.myFunctionsPP.outpoutstring;
 
 public class myConnectionPP {
 
@@ -226,6 +227,19 @@ public class myConnectionPP {
             // empty catch block
             Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, sQLException);
 
+        }
+        return rst;
+    }
+
+    public static ResultSet instCount(String table) {
+        try {
+            if (cnx == null) {
+                cnx = connecterDB();
+            }
+            st = cnx.createStatement();
+            rst = st.executeQuery("SELECT COUNT(*) FROM " + table);
+        } catch (SQLException sQLException) {
+            Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, sQLException);
         }
         return rst;
     }
@@ -998,14 +1012,16 @@ public class myConnectionPP {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             System.out.println("test data base" + testdatab);
+            final List output = outpoutstring("ipadressconfig.dat");
+            String addressIP = String.join(",", output);
             if (testdatab.equals("Online")) {
                 url = "jdbc:mysql://sql6.freemysqlhosting.net.:3306/sql6433725";
                 user = "sql6433725";
                 password = "7JmcRYeRKl";
             } else {
-                url = "jdbc:mysql://127.0.0.1:3306/pulsepro";
-                user = "root";
-                password = "";
+                url = "jdbc:mysql://" + addressIP + ":3306/pulsepro";
+                user = "pulseuser";
+                password = "pulsepass";
             }
             System.out.println("Driver oki");
             Connection cnx2 = DriverManager.getConnection(url, user, password);
