@@ -1,15 +1,15 @@
-*{
-    -fx-primary :#1D2939;
-    -fx-secondary : #C8F9E8;
-    -fx-secondarytext : #002C43;
-    -fx-primarytext : #038C8C;
-    -fx-blue:#012093;
-    -fx-red: #7A092B;
-    -fx-green:#145607;
-    -fx-orange:#7A2E0E; 
-    -fx-firstgradient:#1E1E1E;
-    -fx-secondgradient:#1E1E1E  ;
-    -fx-header-bg:#C8F9E8;
+* {
+    -fx-primary: #1E1E1E;             /* fond principal très sombre */
+    -fx-secondary: #00BCD4;           /* cyan clair, moderne (accent) */
+    -fx-secondarytext: #B2EBF2;       /* bleu très pâle pour détails */
+    -fx-primarytext: #E0E0E0;         /* gris clair pour le texte principal */
+    -fx-blue: #0288D1;                /* bleu doux (optionnel) */
+    -fx-red: #EF5350;                 /* rouge doux pour erreurs */
+    -fx-green: #66BB6A;               /* vert doux pour succès */
+    -fx-orange: #FFA726;              /* orange accentué pour alertes */
+    -fx-firstgradient: #121212;       /* fond en dégradé sombre */
+    -fx-secondgradient: #1E1E1E;
+    -fx-header-bg: #263238;           /* en-têtes légèrement plus claires */
 }
 
 .root{

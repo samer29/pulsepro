@@ -1,0 +1,30 @@
+-- ONLINE CONNECTION 
+- FIX THE IP 
+in database add this line 
+CREATE USER 'pulseuser'@'%' IDENTIFIED BY 'pulsepass';
+GRANT ALL PRIVILEGES ON pulsepro.* TO 'pulseuser'@'%';
+FLUSH PRIVILEGES;
+
+in the connection file 
+url = "jdbc:mysql://192.168.0.195:3306/pulsepro";
+user = "pulseuser";
+password = "pulsepass";
+
+-----
+Open Windows Defender Firewall > Advanced Settings.
+
+Go to Inbound Rules > New Rule.
+
+Choose Port, click Next.
+
+Select TCP, and enter 3306.
+
+Allow the connection.
+
+Name it "MySQL Port 3306" and finish.
+-------------------------------
+new auto increment 
+
+ALTER TABLE patients MODIFY ID VARCHAR(20);
+
+

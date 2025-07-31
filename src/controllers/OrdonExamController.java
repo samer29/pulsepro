@@ -5,6 +5,10 @@
  */
 package controllers;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -14,6 +18,7 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -33,6 +38,7 @@ import static controllers.FirstWindowPulseProController.ordre;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.awt.Desktop;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -69,7 +75,6 @@ import tools.AlertMaker;
 import tools.LocalStorage;
 import static tools.PDFPrintingExample.printPDF;
 import tools.myConnectionPP;
-import static tools.myConnectionPP.LastEnterySQL;
 import static tools.myConnectionPP.addToExamen;
 import static tools.myConnectionPP.delete;
 import static tools.myConnectionPP.editCell;
@@ -143,7 +148,7 @@ public class OrdonExamController implements Initializable {
     private ImageView genderImageSR;
     int testprinting = 0;
     @FXML
-    private JFXComboBox<?> comboFormeMedic;
+    private JFXComboBox comboFormeMedic;
     public static int IDOrdonnace;
     @FXML
     private TableColumn clmFormeMedic;
@@ -204,10 +209,8 @@ public class OrdonExamController implements Initializable {
         passe = 0;
         addToExamen(IDPatient, examen);
         fillDataExamens();
-
         if (passe == 1) {
             myConnectionPP.checkfromDB("listexamens", "Examen", examen);
-
         } else {
             AlertMaker.showMaterialDialogError(rootStackPane, (Node) rootAnchorPane, Arrays.asList(new JFXButton[]{
                 btn
@@ -215,7 +218,6 @@ public class OrdonExamController implements Initializable {
             btn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseevent -> {
             });
         }
-
     }
 
     @FXML
@@ -235,7 +237,6 @@ public class OrdonExamController implements Initializable {
 
         if (passe == 1) {
             myConnectionPP.checkfromDB("medicaments", "NomMed", Article);
-
         } else {
             AlertMaker.showMaterialDialogError(rootStackPane, (Node) rootAnchorPane, Arrays.asList(new JFXButton[]{
                 btn
@@ -243,7 +244,6 @@ public class OrdonExamController implements Initializable {
             btn.addEventHandler(MouseEvent.MOUSE_CLICKED, mouseevent -> {
             });
         }
-
     }
 
     public void fillDataTableMedic() {
@@ -255,27 +255,21 @@ public class OrdonExamController implements Initializable {
         fillculms(clmQuantite, 3);
         fillculms(clmFormeMedic, 4);
         fillculms(clmDetailMedic, 5);
-
         fillTableWithConditionASCENDING("ligneordonance", "IDOrdonnance", id, tableOrdonance, 6, clmID);
-
         clmMedicament.setCellFactory(TextFieldTableCell.forTableColumn());
-        clmMedicament
-                .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
-                        "Article", "ligneordonance", "ID"));
-
+        clmMedicament.setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
+                "Article", "ligneordonance", "ID"));
         clmQuantite.setCellFactory(TextFieldTableCell.forTableColumn());
-        clmQuantite
-                .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
-                        "Quantite", "ligneordonance", "ID"));
+        clmQuantite.setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
+                "Quantite", "ligneordonance", "ID"));
 
         clmDetailMedic.setCellFactory(TextFieldTableCell.forTableColumn());
-        clmDetailMedic
-                .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
-                        "Detail", "ligneordonance", "ID"));
+        clmDetailMedic.setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
+                "Detail", "ligneordonance", "ID"));
         clmFormeMedic.setCellFactory(TextFieldTableCell.forTableColumn());
         clmFormeMedic
                 .setOnEditCommit(event -> editCommit((TableColumn.CellEditEvent<ObservableList<String>, String>) event,
-                        "Forme", "ligneordonance", "ID"));
+                "Forme", "ligneordonance", "ID"));
 
         clmDeleteMedic.setCellFactory(
                 (Callback) new Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>() {
@@ -283,6 +277,19 @@ public class OrdonExamController implements Initializable {
                 return new DeleteButtonCellStock();
             }
         });
+    }
+
+    private Image generateQRCode(String text, int width, int height) throws IOException, BadElementException {
+        try {
+            com.google.zxing.common.BitMatrix bitMatrix = new MultiFormatWriter().encode(text, BarcodeFormat.QR_CODE, width, height);
+            ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
+            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
+            byte[] pngData = pngOutputStream.toByteArray();
+            return Image.getInstance(pngData);
+        } catch (Exception ex) {
+            Logger.getLogger(OrdonExamController.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 
     public void fillDataExamens() {
@@ -309,59 +316,45 @@ public class OrdonExamController implements Initializable {
     public void printOrdoFunction() {
         try {
             JFXButton btn = new JFXButton("OK");
-
             filename = "reports/ordonnance/ordonnance_N" + IDOrdonnace + ".pdf";
-
             // Create a new PDF document
             Document mydoc = new Document(PageSize.A5, 30, 30, 30, 30);
             PdfWriter writer = PdfWriter.getInstance(mydoc, new FileOutputStream(filename));
             mydoc.open();
-
             // Add content to the PDF
             mydoc.addAuthor("Samer Elouissi");
             mydoc.addTitle("Ordonnance");
-
             // Calculate the desired width and height of the image
             float maxWidth = 400f; // Adjust as needed
             float maxHeight = 200f; // Adjust as needed
-
             // Load the image
-            Image img = Image.getInstance("src/icons/PulseProHeader.jpg");
-
+            Image img = Image.getInstance("src/icons/emptyheader.png");
             // Get the original dimensions of the image
             float originalWidth = img.getWidth();
             float originalHeight = img.getHeight();
-
             // Calculate the aspect ratio of the image
             float aspectRatio = originalWidth / originalHeight;
-
             // Calculate the new dimensions while preserving the aspect ratio
             float newWidth = Math.min(originalWidth, maxWidth);
             float newHeight = newWidth / aspectRatio;
-
             // Ensure that the height does not exceed the maxHeight
             if (newHeight > maxHeight) {
                 newHeight = maxHeight;
                 newWidth = newHeight * aspectRatio;
             }
-
             // Scale the image to the new dimensions
             img.scaleAbsolute(newWidth, newHeight);
             img.setAlignment(Element.ALIGN_CENTER);
             img.setSpacingBefore(10f);
-
             // Add the image to the document
             mydoc.add(img);
-
             // Add patient information
             BaseFont baseFont = BaseFont.createFont("fonts/Roboto.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
             BaseFont baseFont2 = BaseFont.createFont("fonts/Akzidenk.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-
             Font customFont = new Font(baseFont, 10, Font.NORMAL);
             Font bold = new Font(baseFont, 10, Font.BOLD);
             Font headerFont = new Font(baseFont2, 16, Font.NORMAL);
-
-            Chunk chunkNum = new Chunk("Mohammadia Le : ", customFont);
+            //Chunk chunkNum = new Chunk("Mohammadia Le : ", customFont);
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
             SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy");
             Date date = inputFormat.parse(DateConsultationDate);
@@ -369,47 +362,46 @@ public class OrdonExamController implements Initializable {
             Chunk chunkBLNumDetail = new Chunk(formattedDate, bold);
 
             Phrase PhraseBLDateService = new Phrase();
-            PhraseBLDateService.add(chunkNum);
+            //PhraseBLDateService.add(chunkNum);
             PhraseBLDateService.add(chunkBLNumDetail);
-            // the
-            // number
-            // of
-            // spaces
-            // as
-            // needed
 
             Paragraph ParaBlDateService = new Paragraph();
             ParaBlDateService.add(PhraseBLDateService);
-            ParaBlDateService.setAlignment(Paragraph.ALIGN_LEFT);
+            ParaBlDateService.setAlignment(Paragraph.ALIGN_RIGHT);
 
-            Chunk chunkNom = new Chunk("Nom & Prénom : ", customFont);
-            Chunk chunkNomDetail = new Chunk(Nom + " " + Prenom, bold);
-            Chunk chunkAge = new Chunk("Age :", customFont);
-            Chunk chunkAgeDetail = new Chunk(age + "", bold);
-            Chunk chunkAns = new Chunk(" ans ", customFont);
+            //Chunk chunkNom = new Chunk("Nom & Prénom : ", customFont);
+            PdfPTable tableNPA = new PdfPTable(2);
+            tableNPA.setWidthPercentage(100);
+            tableNPA.setWidths(new float[]{80, 20}); // 80% for name, 20% for age
 
-            Phrase PhraseNomPrenom = new Phrase();
-            PhraseNomPrenom.add(chunkNom);
-            PhraseNomPrenom.add(chunkNomDetail);
-            PhraseNomPrenom.add(new Chunk("                              ")); // Adjust the number of spaces as needed
-            PhraseNomPrenom.add(chunkAge);
-            PhraseNomPrenom.add(chunkAgeDetail);
-            PhraseNomPrenom.add(chunkAns);
+// Cellule du Nom et Prénom
+            Phrase phraseNomPrenom = new Phrase("              "+Nom + " " + Prenom, bold);
+            PdfPCell cellNom = new PdfPCell(phraseNomPrenom);
+            cellNom.setBorder(Rectangle.NO_BORDER);
+            cellNom.setHorizontalAlignment(Element.ALIGN_LEFT);
 
-            Paragraph ParaNomPrenomAge = new Paragraph();
-            ParaNomPrenomAge.add(PhraseNomPrenom);
-            ParaNomPrenomAge.setAlignment(Paragraph.ALIGN_LEFT);
+// Cellule de l'âge
+            Phrase phraseAge = new Phrase(age + " ans", bold);
+            PdfPCell cellAge = new PdfPCell(phraseAge);
+            cellAge.setBorder(Rectangle.NO_BORDER);
+            cellAge.setHorizontalAlignment(Element.ALIGN_RIGHT);
 
-            LineSeparator ls = new LineSeparator();
-            mydoc.add(new Chunk(ls));
+// Ajout au tableau
+            tableNPA.addCell(cellNom);
+            tableNPA.addCell(cellAge);
+
+// Ajout au document
             mydoc.add((Element) ParaBlDateService);
-            mydoc.add((Element) ParaNomPrenomAge);
+            mydoc.add(tableNPA);
 
-            mydoc.add(new Chunk(ls));
-            Paragraph paragraphHeader = new Paragraph("ORDONNANCE", headerFont);
-            paragraphHeader.setAlignment(Paragraph.ALIGN_CENTER);
-            mydoc.add((Element) paragraphHeader);
+            //LineSeparator ls = new LineSeparator();
+            //mydoc.add(new Chunk(ls));
+           
 
+            //mydoc.add(new Chunk(ls));
+            //Paragraph paragraphHeader = new Paragraph("ORDONNANCE", headerFont);
+            //paragraphHeader.setAlignment(Paragraph.ALIGN_CENTER);
+            //mydoc.add((Element) paragraphHeader);
             ResultSet rs = inst3("ligneordonance", "IDOrdonnance", IDOrdonnace + "");
 
             PdfPTable table = new PdfPTable(3);
@@ -451,8 +443,14 @@ public class OrdonExamController implements Initializable {
 
             mydoc.add(table);
 
-            FooterImage event2 = new FooterImage("src/icons/footerPulsePro.jpg");
-            writer.setPageEvent(event2);
+            //FooterImage event2 = new FooterImage("src/icons/footerPulsePro.jpg");
+            //writer.setPageEvent(event2);
+// Generate QR code from ID
+            String id = LabelOrdre.getText();  // Make sure LabelOrdre contains the ID
+            Image qrCodeImage = generateQRCode(id, 100, 100); // 100x100 pixels
+            qrCodeImage.setAlignment(Element.ALIGN_RIGHT); // You can change to ALIGN_LEFT or CENTER
+            qrCodeImage.setSpacingBefore(30f); // Adds space before QR
+           // mydoc.add(qrCodeImage);
 
             // Close the document
             mydoc.close();
@@ -477,9 +475,7 @@ public class OrdonExamController implements Initializable {
                 }
             });
 
-        } catch (DocumentException | IOException | SQLException ex) {
-            Logger.getLogger(OrdonExamController.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ParseException ex) {
+        } catch (DocumentException | IOException | SQLException | ParseException ex) {
             Logger.getLogger(OrdonExamController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -706,7 +702,7 @@ public class OrdonExamController implements Initializable {
                                 .get(DeleteButtonCellStock.this.getIndex());
                         String ID = null;
                         ID = rowList.get(0).toString();
-                        delete(ID, "ordonnance", "ID");
+                        delete(ID, "ligneordonance", "ID");
                         fillDataTableMedic();
                     }
                 });

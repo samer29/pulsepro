@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -47,6 +48,7 @@ public class myConnectionPP {
     static String password;
     public static SQLException ex2;
     public static String myerrorMessage;
+    public static String generatedID;
 
     public static void delete(String id, String from, String where) {
         try {
@@ -629,26 +631,52 @@ public class myConnectionPP {
         return price;
     }
 
-    public static void addPatient(String nom, String prenom, String sexe, LocalDate DateNaissance, int age) {
+    public static String generatePatientID() {
         if (cnx == null) {
             cnx = connecterDB();
         }
+
+        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        int count = 0;
+
         try {
-            String query = "insert into patients (nom,prenom,sexe,DateNaissance,age) values('"
-                    + nom + "','"
-                    + prenom + "','"
-                    + sexe + "','"
-                    + DateNaissance + "','"
-                    + age + "' )";
-            PreparedStatement ps = cnx.prepareStatement(query);
-            ps.execute();
-            passe = 1;
+            String sql = "SELECT COUNT(*) FROM patients WHERE ID LIKE ?";
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ps.setString(1, today + "%");
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                count = rs.getInt(1) + 1; // +1 for next ID
+            }
         } catch (SQLException ex) {
             Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+        String sequence = String.format("%04d", count); // padding: 0001
+        return today + sequence;
     }
 
-    public static void addConsultation(int IDPatient, LocalDate DateConsultation, String Motif, Double Prix) {
+public static void addPatient(String nom, String prenom, String sexe, LocalDate DateNaissance, int age) {
+    if (cnx == null) {
+        cnx = connecterDB();
+    }
+    try {
+        generatedID = generatePatientID();
+        String query = "INSERT INTO patients (ID, nom, prenom, sexe, DateNaissance, age) VALUES (?, ?, ?, ?, ?, ?)";
+        PreparedStatement ps = cnx.prepareStatement(query);
+        ps.setString(1, generatedID);
+        ps.setString(2, nom);
+        ps.setString(3, prenom);
+        ps.setString(4, sexe);
+        ps.setDate(5, java.sql.Date.valueOf(DateNaissance));
+        ps.setInt(6, age);
+        ps.execute();
+        passe = 1;
+    } catch (SQLException ex) {
+        Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
+    }
+}
+
+    public static void addConsultation(String IDPatient, LocalDate DateConsultation, String Motif, Double Prix) {
         if (cnx == null) {
             cnx = connecterDB();
         }
@@ -680,8 +708,7 @@ public class myConnectionPP {
             Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    public static int LastEnterySQL(String ID, String table) {
+public static int LastEnterySQL(String ID, String table) {
         int lastEntry = 0;
 
         try {
@@ -699,6 +726,34 @@ public class myConnectionPP {
         }
         return lastEntry;
     }
+  public static int LastEntryOfDay(String table) {
+    int lastSequence = 0;
+    String todayPrefix = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+    try {
+        if (cnx == null) {
+            cnx = connecterDB();
+        }
+
+        String query = "SELECT MAX(ID) FROM " + table + " WHERE ID LIKE ?";
+        PreparedStatement ps = cnx.prepareStatement(query);
+        ps.setString(1, todayPrefix + "%");
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            String lastID = rs.getString(1);
+            if (lastID != null && lastID.length() == 13) {
+                String sequenceStr = lastID.substring(8); // Ex: "00001"
+                lastSequence = Integer.parseInt(sequenceStr);
+            }
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    return lastSequence;
+}
+
 
     public static int createNewOrdonnance(int IDPatient) {
         int IDOrdonnance = -1;

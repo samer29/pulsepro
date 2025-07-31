@@ -160,6 +160,7 @@
                               <TableColumn fx:id="clmSexePatients" prefWidth="75.0" text="Sexe" />
                               <TableColumn fx:id="clmDateNaissancePatients" prefWidth="75.0" text="Date Naissance" />
                               <TableColumn fx:id="clmAgePatients" prefWidth="75.0" text="Age" />
+                              <TableColumn fx:id="clmPrintCodeQr" prefWidth="75.0" text="QR Code Gen" />
                               <TableColumn fx:id="clmDeletePatients" prefWidth="75.0" text="Supprimer" />
                           </columns>
                            <columnResizePolicy>

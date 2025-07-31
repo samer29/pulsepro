@@ -5,6 +5,15 @@
  */
 package controllers;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXDatePicker;
@@ -16,7 +25,9 @@ import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIcon;
 import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import javafx.scene.media.AudioClip;
 import java.awt.Desktop;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -43,7 +54,7 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.image.Image;
+
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -59,10 +70,12 @@ import tools.AlertMaker;
 import tools.LocalStorage;
 import static tools.PDFPrintingExample.printPDF;
 import tools.myConnectionPP;
-import static tools.myConnectionPP.LastEnterySQL;
+import static tools.myConnectionPP.LastEntryOfDay;
 import static tools.myConnectionPP.delete;
 import static tools.myConnectionPP.editCell;
 import static tools.myConnectionPP.ex2;
+import static tools.myConnectionPP.generatePatientID;
+import static tools.myConnectionPP.generatedID;
 import static tools.myConnectionPP.price;
 import tools.myFunctionsPP;
 import static tools.myFunctionsPP.closeStage;
@@ -124,7 +137,8 @@ public class FirstWindowPulseProController implements Initializable {
     ObservableList<Object> data;
     Stage stage = new Stage();
     public static String Nom, Prenom, Sexe;
-    public static int age, ordre;
+    public static int age;
+    public static String ordre;
     @FXML
     private JFXButton btnOrdonance;
     String IdforBL;
@@ -192,6 +206,8 @@ public class FirstWindowPulseProController implements Initializable {
     @FXML
     private JFXButton bntAbout;
     private int lastPatientCount = -1; // Will store row count after each check
+    @FXML
+    private TableColumn clmPrintCodeQr;
 
     /**
      * Initializes the controller class.
@@ -379,6 +395,10 @@ public class FirstWindowPulseProController implements Initializable {
                 (Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>) param
                 -> new DeleteButtonCellStock()
         );
+        clmPrintCodeQr.setCellFactory(
+                (Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>) param
+                -> new PrintQRCodeButtonCellPatients()
+        );
 
         // Fill or refresh the table data
         fillTableSortedByIDASCENDING(data, TablePatients, "patients", 1, 6, clmOrdrePatient);
@@ -402,7 +422,7 @@ public class FirstWindowPulseProController implements Initializable {
             IdforBL = row2.toString().split(",")[0].substring(1);
             ResultSet rs = myConnectionPP.inst3("Patients", "ID", IdforBL);
             while (rs.next()) {
-                ordre = rs.getInt(1);
+                ordre = rs.getString(1);
                 Nom = rs.getString(2);
                 Prenom = rs.getString(3);
                 Sexe = rs.getString(4);
@@ -415,12 +435,22 @@ public class FirstWindowPulseProController implements Initializable {
         }
     }
 
-    @FXML
-    private void CalcuclateDateOfBirth(KeyEvent event) {
-        LocalDate dateOfBirth = calculateDateOfBirth(Integer.parseInt(txtAgeAddPati.getText()),
-                txtDateNaissanceAddPati);
-        txtDateNaissanceAddPati.setValue(dateOfBirth);
+ @FXML
+private void CalcuclateDateOfBirth(KeyEvent event) {
+    String ageText = txtAgeAddPati.getText();
+    
+    if (ageText != null && !ageText.isEmpty()) {
+        try {
+            int age = Integer.parseInt(ageText);
+            LocalDate dateOfBirth = calculateDateOfBirth(age, txtDateNaissanceAddPati);
+            txtDateNaissanceAddPati.setValue(dateOfBirth);
+        } catch (NumberFormatException e) {
+            // Tu peux afficher un message d'erreur ici si tu veux
+            System.out.println("Âge invalide : " + ageText);
+        }
     }
+}
+
 
     @FXML
     private void EnableOrdonance(MouseEvent event) {
@@ -501,7 +531,7 @@ public class FirstWindowPulseProController implements Initializable {
         Object row2 = TableOrdonances.getSelectionModel().getSelectedItems().get(0);
         if (row2 != null) {
             idpatient = row2.toString().split(",")[0].substring(1);
-            ordre = Integer.parseInt(idpatient);
+            ordre = idpatient;
         }
 
         fillculms(clmIDConsultation, 0);
@@ -549,7 +579,8 @@ public class FirstWindowPulseProController implements Initializable {
     public void fillCircleWithImage() {
         InputStream in = getClass().getResourceAsStream("/icons/logo.png");
         if (in != null) {
-            Image imgUsr = new Image(in);
+
+            javafx.scene.image.Image imgUsr = new javafx.scene.image.Image(in);
             about_us_pic.setFill(new ImagePattern(imgUsr));
             try {
                 in.close();
@@ -934,7 +965,7 @@ public class FirstWindowPulseProController implements Initializable {
 
     public void redemaragedata() {
         fillDataPatients();
-        ordre = LastEnterySQL("ID", "patients");
+        ordre = generatedID;
         txtNomAddPati.setText(null);
         txtPrenoAddPati.setText(null);
         txtAgeAddPati.setText(null);
@@ -997,6 +1028,86 @@ public class FirstWindowPulseProController implements Initializable {
     @FXML
     private void minimizewindow(MouseEvent event) {
         myFunctionsPP.minimizeScene(rootAnchorPane);
+    }
+
+    private com.itextpdf.text.Image generateQRCode(String text, int width, int height) throws IOException, BadElementException {
+        try {
+            com.google.zxing.common.BitMatrix bitMatrix = new MultiFormatWriter().encode(text, BarcodeFormat.QR_CODE, width, height);
+            ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
+            MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
+            byte[] pngData = pngOutputStream.toByteArray();
+            return com.itextpdf.text.Image.getInstance(pngData);
+        } catch (Exception ex) {
+            Logger.getLogger(OrdonExamController.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    public void generateAndPrintQRCode(String id) throws Exception {
+        Document doc = new Document(PageSize.A6, 20, 20, 20, 20);
+        String filename = "reports/qrcodes/patient_qr_" + id + ".pdf";
+        PdfWriter.getInstance(doc, new FileOutputStream(filename));
+        doc.open();
+
+        // Génération du QR Code
+        Image qrImage = generateQRCode(id, 150, 150); // 150x150 px
+        qrImage.setAlignment(Element.ALIGN_CENTER);
+        qrImage.setSpacingBefore(30f);
+        qrImage.setSpacingAfter(20f);
+
+        // Texte facultatif sous le QR
+        //Font font = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
+        //Paragraph p = new Paragraph("ID: " + id, font);
+        //p.setAlignment(Element.ALIGN_CENTER);
+
+        doc.add(qrImage);
+        //doc.add(p);
+        doc.close();
+
+        // Ouvrir ou imprimer
+        Desktop.getDesktop().open(new File(filename));
+    }
+
+    private class PrintQRCodeButtonCellPatients extends TableCell<ObservableList, String> {
+
+        final HBox cellButton = new HBox();
+        final Button printButton = new Button("");
+
+        PrintQRCodeButtonCellPatients() {
+            printButton.setFocusTraversable(false);
+            printButton.setPadding(new Insets(0.0));
+            cellButton.getChildren().addAll(printButton);
+            printButton.setStyle(IDLE_BUTTON_STYLE);
+            printButton.setOnMouseExited(e -> printButton.setStyle(IDLE_BUTTON_STYLE));
+            printButton.setOnMouseEntered(e -> printButton.setStyle(HOVERED_BUTTON_STYLE));
+
+            // Icon
+            MaterialDesignIconView icon = new MaterialDesignIconView(MaterialDesignIcon.QRCODE);
+            icon.setSize("2em");
+            printButton.setGraphic(icon);
+        }
+
+        @Override
+        protected void updateItem(String t, boolean empty) {
+            super.updateItem(t, empty);
+            if (!empty) {
+                printButton.setOnAction(event -> {
+                    ObservableList rowList = (ObservableList) TablePatients.getItems()
+                            .get(PrintQRCodeButtonCellPatients.this.getIndex());
+
+                    String id = rowList.get(0).toString(); // Assumes first column is ID
+
+                    try {
+                        generateAndPrintQRCode(id);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                });
+                setGraphic(cellButton);
+            } else {
+                setGraphic(null);
+            }
+        }
     }
 
 }

@@ -1,16 +1,17 @@
-*{
-    -fx-primary :#F7F7F7;
-    -fx-secondary : #2AA7FF;
-    -fx-secondarytext : #37261d;
-    -fx-primarytext : #03329f;
-    -fx-blue:#012093;
-    -fx-red: #FF0000;
-    -fx-green:#2E7D32;
-    -fx-orange:#FF781F; 
-    -fx-firstgradient:#ffffff;
-    -fx-secondgradient:#ffffff  ;
-    -fx-header-bg:#F0F0F0;
+* {
+    -fx-primary: #FDFDFD;              /* blanc cassé */
+    -fx-secondary: #42A5F5;            /* bleu doux */
+    -fx-secondarytext: #1E3A5F;        /* bleu foncé pour le texte accent */
+    -fx-primarytext: #212121;          /* gris très foncé */
+    -fx-blue: #42A5F5;                 /* bleu utilisé partout */
+    -fx-red: #D32F2F;                  /* rouge doux */
+    -fx-green: #388E3C;                /* vert équilibré */
+    -fx-orange: #42A5F5;               /* redirigé vers le bleu */
+    -fx-firstgradient: #FAFAFA;        /* fond très clair */
+    -fx-secondgradient: #F5F5F5;       /* gris très pâle */
+    -fx-header-bg: #E3F2FD;            /* bleu pâle (header) */
 }
+
 @font-face {
     font-family: 'CustomFont';
     src: url('fonts/Roboto.ttf');
