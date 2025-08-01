@@ -48,6 +48,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
@@ -186,8 +187,6 @@ public class FirstWindowPulseProController implements Initializable {
     @FXML
     private TableColumn clmMotifConsultation;
     @FXML
-    private TableColumn clmPrixConsultation;
-    @FXML
     private TableColumn clmDeleteConsultation;
     @FXML
     private TableColumn clmIDLigneOrdonnance;
@@ -208,6 +207,8 @@ public class FirstWindowPulseProController implements Initializable {
     private int lastPatientCount = -1; // Will store row count after each check
     @FXML
     private TableColumn clmPrintCodeQr;
+    @FXML
+    private TableColumn<?, ?> clmDetailsConsultation;
 
     /**
      * Initializes the controller class.
@@ -217,6 +218,7 @@ public class FirstWindowPulseProController implements Initializable {
         Timeline refreshTimeline = new Timeline(
                 new KeyFrame(Duration.minutes(3), event -> fillDataPatients())
         );
+        
         refreshTimeline.setCycleCount(Animation.INDEFINITE);
         refreshTimeline.play();
 
@@ -393,7 +395,7 @@ public class FirstWindowPulseProController implements Initializable {
 
         clmDeletePatients.setCellFactory(
                 (Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>) param
-                -> new DeleteButtonCellStock()
+                -> new DeleteButtonCellPatient()
         );
         clmPrintCodeQr.setCellFactory(
                 (Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>) param
@@ -435,22 +437,21 @@ public class FirstWindowPulseProController implements Initializable {
         }
     }
 
- @FXML
-private void CalcuclateDateOfBirth(KeyEvent event) {
-    String ageText = txtAgeAddPati.getText();
-    
-    if (ageText != null && !ageText.isEmpty()) {
-        try {
-            int age = Integer.parseInt(ageText);
-            LocalDate dateOfBirth = calculateDateOfBirth(age, txtDateNaissanceAddPati);
-            txtDateNaissanceAddPati.setValue(dateOfBirth);
-        } catch (NumberFormatException e) {
-            // Tu peux afficher un message d'erreur ici si tu veux
-            System.out.println("Âge invalide : " + ageText);
+    @FXML
+    private void CalcuclateDateOfBirth(KeyEvent event) {
+        String ageText = txtAgeAddPati.getText();
+
+        if (ageText != null && !ageText.isEmpty()) {
+            try {
+                int age = Integer.parseInt(ageText);
+                LocalDate dateOfBirth = calculateDateOfBirth(age, txtDateNaissanceAddPati);
+                txtDateNaissanceAddPati.setValue(dateOfBirth);
+            } catch (NumberFormatException e) {
+                // Tu peux afficher un message d'erreur ici si tu veux
+                System.out.println("Âge invalide : " + ageText);
+            }
         }
     }
-}
-
 
     @FXML
     private void EnableOrdonance(MouseEvent event) {
@@ -537,13 +538,19 @@ private void CalcuclateDateOfBirth(KeyEvent event) {
         fillculms(clmIDConsultation, 0);
         fillculms(clmDateConsultation, 2);
         fillculms(clmMotifConsultation, 3);
-        fillculms(clmPrixConsultation, 4);
         clmDeleteConsultation.setCellFactory(
                 (Callback) new Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>() {
             public TableCell<ObservableList, String> call(TableColumn<ObservableList, String> param) {
                 return new DeleteButtonCellConsultation();
             }
         });
+        clmDetailsConsultation.setCellFactory((Callback) new Callback<TableColumn<ObservableList, String>, TableCell<ObservableList, String>>() {
+            @Override
+            public TableCell<ObservableList, String> call(TableColumn<ObservableList, String> param) {
+                return new DetailButtonCellConsultation();
+            }
+        }
+        );
         myFunctionsPP.fillTableWithConditionASCENDING("consultation", "IDPatient", idpatient, TableConsultation, 5, clmIDConsultation);
     }
 
@@ -649,17 +656,18 @@ private void CalcuclateDateOfBirth(KeyEvent event) {
         loadWindow(this.getClass().getResource("/views/viewOrdonExam.fxml"), "Crée une Ordonnance ", stage, "no");
     }
 
-    private class DeleteButtonCellStock extends TableCell<ObservableList, String> {
+    private class DeleteButtonCellPatient extends TableCell<ObservableList, String> {
 
         final HBox cellButton = new HBox();
         final Button cellButton2 = new Button("");
 
-        DeleteButtonCellStock() {
+        DeleteButtonCellPatient() {
             cellButton2.setFocusTraversable(false);
             cellButton2.setPadding(new Insets(0.0));
             cellButton.getChildren().addAll(new Node[]{
                 cellButton2
             });
+            cellButton.setAlignment(Pos.CENTER);
             cellButton2.setStyle(IDLE_BUTTON_STYLE);
             cellButton2.setOnMouseExited(e -> cellButton2.setStyle(IDLE_BUTTON_STYLE));
             cellButton2.setOnMouseEntered(e -> cellButton2.setStyle(HOVERED_BUTTON_STYLE));
@@ -675,13 +683,15 @@ private void CalcuclateDateOfBirth(KeyEvent event) {
 
                     public void handle(ActionEvent t2) {
                         ObservableList rowList = (ObservableList) TablePatients.getItems()
-                                .get(DeleteButtonCellStock.this.getIndex());
+                                .get(DeleteButtonCellPatient.this.getIndex());
                         JFXButton btnyes = new JFXButton("Oui");
                         JFXButton btnno = new JFXButton("Non");
                         btnyes.addEventHandler(MouseEvent.MOUSE_CLICKED, event1 -> {
                             String ID = null;
                             ID = rowList.get(0).toString();
                             delete(ID, "patients", "ID");
+                            delete(ID, "consultation", "IDPatient");
+                            delete(ID, "examenprescrit", "IDPatient");
 
                             fillDataPatients();
                             JFXButton button = new JFXButton("Terminer!");
@@ -721,6 +731,7 @@ private void CalcuclateDateOfBirth(KeyEvent event) {
             cellButton.getChildren().addAll(new Node[]{
                 cellButton2
             });
+            cellButton.setAlignment(Pos.CENTER);
             cellButton2.setStyle(IDLE_BUTTON_STYLE);
             cellButton2.setOnMouseExited(e -> cellButton2.setStyle(IDLE_BUTTON_STYLE));
             cellButton2.setOnMouseEntered(e -> cellButton2.setStyle(HOVERED_BUTTON_STYLE));
@@ -783,6 +794,7 @@ private void CalcuclateDateOfBirth(KeyEvent event) {
             cellButton.getChildren().addAll(new Node[]{
                 cellButton2
             });
+            cellButton.setAlignment(Pos.CENTER);
             cellButton2.setStyle(IDLE_BUTTON_STYLE);
             cellButton2.setOnMouseExited(e -> cellButton2.setStyle(IDLE_BUTTON_STYLE));
             cellButton2.setOnMouseEntered(e -> cellButton2.setStyle(HOVERED_BUTTON_STYLE));
@@ -844,6 +856,7 @@ private void CalcuclateDateOfBirth(KeyEvent event) {
             cellButton.getChildren().addAll(new Node[]{
                 cellButton2
             });
+            cellButton.setAlignment(Pos.CENTER);
             cellButton2.setStyle(IDLE_BUTTON_STYLE);
             cellButton2.setOnMouseExited(e -> cellButton2.setStyle(IDLE_BUTTON_STYLE));
             cellButton2.setOnMouseEntered(e -> cellButton2.setStyle(HOVERED_BUTTON_STYLE));
@@ -1059,7 +1072,6 @@ private void CalcuclateDateOfBirth(KeyEvent event) {
         //Font font = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
         //Paragraph p = new Paragraph("ID: " + id, font);
         //p.setAlignment(Element.ALIGN_CENTER);
-
         doc.add(qrImage);
         //doc.add(p);
         doc.close();
@@ -1077,6 +1089,7 @@ private void CalcuclateDateOfBirth(KeyEvent event) {
             printButton.setFocusTraversable(false);
             printButton.setPadding(new Insets(0.0));
             cellButton.getChildren().addAll(printButton);
+            cellButton.setAlignment(Pos.CENTER);
             printButton.setStyle(IDLE_BUTTON_STYLE);
             printButton.setOnMouseExited(e -> printButton.setStyle(IDLE_BUTTON_STYLE));
             printButton.setOnMouseEntered(e -> printButton.setStyle(HOVERED_BUTTON_STYLE));
@@ -1102,6 +1115,51 @@ private void CalcuclateDateOfBirth(KeyEvent event) {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
+                });
+                setGraphic(cellButton);
+            } else {
+                setGraphic(null);
+            }
+        }
+    }
+
+    private class DetailButtonCellConsultation extends TableCell<ObservableList, String> {
+
+        final HBox cellButton = new HBox();
+        final Button detailButton = new Button("");
+
+        DetailButtonCellConsultation() {
+            detailButton.setFocusTraversable(false);
+            detailButton.setPadding(new Insets(0.0));
+            detailButton.setStyle(IDLE_BUTTON_STYLE);
+            detailButton.setOnMouseExited(e -> detailButton.setStyle(IDLE_BUTTON_STYLE));
+            detailButton.setOnMouseEntered(e -> detailButton.setStyle(HOVERED_BUTTON_STYLE));
+
+            // Icône loupe
+            MaterialDesignIconView loupeIcon = new MaterialDesignIconView(MaterialDesignIcon.MAGNIFY);
+            loupeIcon.setSize("2em");
+            detailButton.setGraphic(loupeIcon);
+            cellButton.getChildren().add(detailButton);
+            cellButton.setAlignment(Pos.CENTER);
+
+        }
+
+        @Override
+        protected void updateItem(String t, boolean empty) {
+            super.updateItem(t, empty);
+            if (!empty) {
+                detailButton.setOnAction(event -> {
+                    ObservableList rowList = (ObservableList) TableConsultation.getItems().get(getIndex());
+                    String idConsultation = rowList.get(0).toString();
+                    String observation = rowList.get(3).toString(); // motif ou remarque si stocké là
+
+                    // Enregistrer IDConsultation dans une variable statique accessible
+                    ConsultationController.IDConsultation = Integer.parseInt(idConsultation);
+
+                    // Ouvrir la fenêtre de détails
+                    Stage stage = new Stage();
+                    myFunctionsPP.loadWindow(getClass().getResource("/views/viewDetailConsultation.fxml"),
+                            "Détail de consultation", stage, "no");
                 });
                 setGraphic(cellButton);
             } else {

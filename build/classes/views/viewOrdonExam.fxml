@@ -68,7 +68,12 @@
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                  </HBox.margin>
                               </JFXTextField>
-                              <FontAwesomeIconView glyphName="PLUS_CIRCLE" onMouseClicked="#addNewMedic" size="30">
+                              <FontAwesomeIconView glyphName="CHECK" onMouseClicked="#addNewMedic" size="30">
+                                 <HBox.margin>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </HBox.margin>
+                              </FontAwesomeIconView>
+                              <FontAwesomeIconView glyphName="PLUS_SQUARE" layoutX="655.0" layoutY="46.0" onMouseClicked="#addNewDiagnostic" size="30">
                                  <HBox.margin>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                  </HBox.margin>
@@ -125,7 +130,7 @@
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                  </HBox.margin>
                               </JFXComboBox>
-                              <FontAwesomeIconView glyphName="PLUS_CIRCLE" onMouseClicked="#AddNewExamen" size="30">
+                              <FontAwesomeIconView glyphName="CHECK" onMouseClicked="#AddNewExamen" size="30">
                                  <HBox.margin>
                                     <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                  </HBox.margin>

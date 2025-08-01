@@ -29,6 +29,7 @@ import static tools.myConnectionPP.LastEnterySQL;
 import static tools.myConnectionPP.ex2;
 import static tools.myConnectionPP.passe;
 import tools.myFunctionsPP;
+import static tools.myFunctionsPP.OnlyIntegersForTextField;
 import static tools.myFunctionsPP.loadWindow;
 
 /**
@@ -61,6 +62,7 @@ public class ConsultationController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         getdata();
         SetTheme();
+        OnlyIntegersForTextField(txtPrix);
     }
 
     public void getdata() {

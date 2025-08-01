@@ -228,7 +228,7 @@
                                           <TableColumn fx:id="clmIDConsultation" prefWidth="61.0" text="ID Consultation" />
                                           <TableColumn fx:id="clmDateConsultation" prefWidth="89.0" text="Date" />
                                           <TableColumn fx:id="clmMotifConsultation" prefWidth="75.0" text="Motif" />
-                                          <TableColumn fx:id="clmPrixConsultation" prefWidth="75.0" text="Prix" />
+                                          <TableColumn fx:id="clmDetailsConsultation" prefWidth="75.0" text="Details" />
                                           <TableColumn fx:id="clmDeleteConsultation" prefWidth="75.0" text="Supprimer" />
                                        </columns>
                                        <columnResizePolicy>

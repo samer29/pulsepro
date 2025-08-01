@@ -70,6 +70,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import tools.AlertMaker;
 import tools.LocalStorage;
@@ -88,6 +89,7 @@ import static tools.myFunctionsPP.fillComboline;
 import static tools.myFunctionsPP.fillTableWithConditionASCENDING;
 import static tools.myFunctionsPP.fillcombox;
 import static tools.myFunctionsPP.fillculms;
+import static tools.myFunctionsPP.loadWindow;
 
 /**
  * FXML Controller class
@@ -219,9 +221,7 @@ public class OrdonExamController implements Initializable {
             });
         }
     }
-
-    @FXML
-    private void addNewMedic(MouseEvent event) {
+    public void addNewMedicToOrdon(){
         JFXButton btn = new JFXButton("OK");
         String Article, detail, forme;
         int Quantite;
@@ -277,6 +277,10 @@ public class OrdonExamController implements Initializable {
                 return new DeleteButtonCellStock();
             }
         });
+    }
+    @FXML
+    private void addNewMedic(MouseEvent event) {
+        addNewMedicToOrdon();
     }
 
     private Image generateQRCode(String text, int width, int height) throws IOException, BadElementException {
@@ -375,7 +379,7 @@ public class OrdonExamController implements Initializable {
             tableNPA.setWidths(new float[]{80, 20}); // 80% for name, 20% for age
 
 // Cellule du Nom et Prénom
-            Phrase phraseNomPrenom = new Phrase("              "+Nom + " " + Prenom, bold);
+            Phrase phraseNomPrenom = new Phrase("              " + Nom + " " + Prenom, bold);
             PdfPCell cellNom = new PdfPCell(phraseNomPrenom);
             cellNom.setBorder(Rectangle.NO_BORDER);
             cellNom.setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -396,8 +400,6 @@ public class OrdonExamController implements Initializable {
 
             //LineSeparator ls = new LineSeparator();
             //mydoc.add(new Chunk(ls));
-           
-
             //mydoc.add(new Chunk(ls));
             //Paragraph paragraphHeader = new Paragraph("ORDONNANCE", headerFont);
             //paragraphHeader.setAlignment(Paragraph.ALIGN_CENTER);
@@ -450,7 +452,7 @@ public class OrdonExamController implements Initializable {
             Image qrCodeImage = generateQRCode(id, 100, 100); // 100x100 pixels
             qrCodeImage.setAlignment(Element.ALIGN_RIGHT); // You can change to ALIGN_LEFT or CENTER
             qrCodeImage.setSpacingBefore(30f); // Adds space before QR
-           // mydoc.add(qrCodeImage);
+            // mydoc.add(qrCodeImage);
 
             // Close the document
             mydoc.close();
@@ -672,6 +674,15 @@ public class OrdonExamController implements Initializable {
         txtDetailMedic.setText(null);
         fillcombox(Arrays.asList("1", "2", "3", "4", "5", "6", "7"), comboQuantiteMedic, "1");
     }
+
+   
+
+    @FXML
+    private void addNewDiagnostic(MouseEvent event) {
+        Stage stage = new Stage();
+        loadWindow(this.getClass().getResource("/views/viewNewDiagnostic.fxml"), "Crée un Diagnostic", stage, "no");
+    }
+
 
     private class DeleteButtonCellStock extends TableCell<ObservableList, String> {
 

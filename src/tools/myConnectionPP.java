@@ -655,26 +655,26 @@ public class myConnectionPP {
         return today + sequence;
     }
 
-public static void addPatient(String nom, String prenom, String sexe, LocalDate DateNaissance, int age) {
-    if (cnx == null) {
-        cnx = connecterDB();
+    public static void addPatient(String nom, String prenom, String sexe, LocalDate DateNaissance, int age) {
+        if (cnx == null) {
+            cnx = connecterDB();
+        }
+        try {
+            generatedID = generatePatientID();
+            String query = "INSERT INTO patients (ID, nom, prenom, sexe, DateNaissance, age) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement ps = cnx.prepareStatement(query);
+            ps.setString(1, generatedID);
+            ps.setString(2, nom);
+            ps.setString(3, prenom);
+            ps.setString(4, sexe);
+            ps.setDate(5, java.sql.Date.valueOf(DateNaissance));
+            ps.setInt(6, age);
+            ps.execute();
+            passe = 1;
+        } catch (SQLException ex) {
+            Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-    try {
-        generatedID = generatePatientID();
-        String query = "INSERT INTO patients (ID, nom, prenom, sexe, DateNaissance, age) VALUES (?, ?, ?, ?, ?, ?)";
-        PreparedStatement ps = cnx.prepareStatement(query);
-        ps.setString(1, generatedID);
-        ps.setString(2, nom);
-        ps.setString(3, prenom);
-        ps.setString(4, sexe);
-        ps.setDate(5, java.sql.Date.valueOf(DateNaissance));
-        ps.setInt(6, age);
-        ps.execute();
-        passe = 1;
-    } catch (SQLException ex) {
-        Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
-    }
-}
 
     public static void addConsultation(String IDPatient, LocalDate DateConsultation, String Motif, Double Prix) {
         if (cnx == null) {
@@ -708,7 +708,8 @@ public static void addPatient(String nom, String prenom, String sexe, LocalDate 
             Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-public static int LastEnterySQL(String ID, String table) {
+
+    public static int LastEnterySQL(String ID, String table) {
         int lastEntry = 0;
 
         try {
@@ -726,34 +727,34 @@ public static int LastEnterySQL(String ID, String table) {
         }
         return lastEntry;
     }
-  public static int LastEntryOfDay(String table) {
-    int lastSequence = 0;
-    String todayPrefix = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-    try {
-        if (cnx == null) {
-            cnx = connecterDB();
-        }
+    public static int LastEntryOfDay(String table) {
+        int lastSequence = 0;
+        String todayPrefix = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-        String query = "SELECT MAX(ID) FROM " + table + " WHERE ID LIKE ?";
-        PreparedStatement ps = cnx.prepareStatement(query);
-        ps.setString(1, todayPrefix + "%");
-        ResultSet rs = ps.executeQuery();
-
-        if (rs.next()) {
-            String lastID = rs.getString(1);
-            if (lastID != null && lastID.length() == 13) {
-                String sequenceStr = lastID.substring(8); // Ex: "00001"
-                lastSequence = Integer.parseInt(sequenceStr);
+        try {
+            if (cnx == null) {
+                cnx = connecterDB();
             }
+
+            String query = "SELECT MAX(ID) FROM " + table + " WHERE ID LIKE ?";
+            PreparedStatement ps = cnx.prepareStatement(query);
+            ps.setString(1, todayPrefix + "%");
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                String lastID = rs.getString(1);
+                if (lastID != null && lastID.length() == 13) {
+                    String sequenceStr = lastID.substring(8); // Ex: "00001"
+                    lastSequence = Integer.parseInt(sequenceStr);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
         }
-    } catch (SQLException ex) {
-        Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
+
+        return lastSequence;
     }
-
-    return lastSequence;
-}
-
 
     public static int createNewOrdonnance(int IDPatient) {
         int IDOrdonnance = -1;
@@ -878,17 +879,19 @@ public static int LastEnterySQL(String ID, String table) {
 
     }
 
-    public static void editCell(String id2, String clm, String table, String DCI, String ID) {
+    public static void editCell(String WhereClm, String setClm, String table, String SettedItem, String IDWhere) {
+        passe = 0;
         try {
             String query = "UPDATE " + table + " SET "
-                    + clm + "='" + DCI
-                    + "' WHERE  " + id2 + "='" + ID + "'";
+                    + setClm + "='" + SettedItem
+                    + "' WHERE  " + WhereClm + "='" + IDWhere + "'";
             if (cnx == null) {
                 cnx = connecterDB();
             }
             st = cnx.createStatement();
             st.executeUpdate(query);
-            System.out.println(clm + " bien modifier");
+            System.out.println(setClm + " bien modifier");
+            passe = 1;
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -972,6 +975,27 @@ public static int LastEnterySQL(String ID, String table) {
             st = cnx.createStatement();
             String myQuery = "select * from " + from + " where " + close1 + " ='" + nom + "' and " + close2 + "='"
                     + passowrd + "'";
+            rst = st.executeQuery(myQuery);
+        } catch (SQLException ex) {
+            Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rst;
+    }
+
+    public static ResultSet loadFullConsultationByID(String idConsultation) {
+        try {
+            if (cnx == null) {
+                cnx = connecterDB();
+            }
+            st = cnx.createStatement();
+            String myQuery = "SELECT "
+                    + "p.nom, p.prenom, p.age, "
+                    + "c.DateConsultation, c.Motif, c.Observation, "
+                    + "l.Article, l.Quantite "
+                    + "FROM consultation c "
+                    + "JOIN patients p ON c.IDPatient = p.ID "
+                    + "LEFT JOIN ligneordonance l ON c.ID = l.IDOrdonnance "
+                    + "WHERE c.ID = '" + idConsultation + "'";
             rst = st.executeQuery(myQuery);
         } catch (SQLException ex) {
             Logger.getLogger(myConnectionPP.class.getName()).log(Level.SEVERE, null, ex);

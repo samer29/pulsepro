@@ -1,14 +1,16 @@
 {
   "java.project.referencedLibraries": [
-    "lib/**/*.jar",
-    "src/lib/com.lowagie.text-2.1.7.jar",
-    "src/lib/controlsfx-8.40.14.jar",
-    "src/lib/de.jar",
-    "src/lib/fontawesomefx-fontawesome-4.7.0-5.jar",
-    "src/lib/fontawesomefx-materialdesignfont-1.7.22-4.jar",
-    "src/lib/itextpdf-5.1.0.jar",
-    "src/lib/jfoenix-8.0.1.jar",
-    "src/lib/mysql-connector-java-5.1.28-bin.jar",
-    "src/lib/pdfbox-app-2.0.30.jar"
+    "libvs/**/*.jar",
+    "src/libvs/com.lowagie.text-2.1.7.jar",
+    "src/libvs/controlsfx-8.40.14.jar",
+    "src/libvs/core-3.5.2.jar",
+    "src/libvs/dcm4che-core-5.22.6-sources.jar",
+    "src/libvs/de.jar",
+    "src/libvs/fontawesomefx-8.9.jar",
+    "src/libvs/itextpdf-5.1.0.jar",
+    "src/libvs/javase-3.5.2.jar",
+    "src/libvs/jfoenix-8.0.1.jar",
+    "src/libvs/mysql-connector-java-5.1.28-bin.jar",
+    "src/libvs/pdfbox-app-2.0.30.jar"
   ]
 }
