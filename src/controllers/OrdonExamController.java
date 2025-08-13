@@ -40,6 +40,7 @@ import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView;
 import java.awt.Desktop;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -72,6 +73,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import static pulsepro.FXMLDocumentController.NomMedecin;
 import tools.AlertMaker;
 import tools.LocalStorage;
 import static tools.PDFPrintingExample.printPDF;
@@ -221,7 +223,8 @@ public class OrdonExamController implements Initializable {
             });
         }
     }
-    public void addNewMedicToOrdon(){
+
+    public void addNewMedicToOrdon() {
         JFXButton btn = new JFXButton("OK");
         String Article, detail, forme;
         int Quantite;
@@ -278,6 +281,7 @@ public class OrdonExamController implements Initializable {
             }
         });
     }
+
     @FXML
     private void addNewMedic(MouseEvent event) {
         addNewMedicToOrdon();
@@ -447,7 +451,7 @@ public class OrdonExamController implements Initializable {
 
             //FooterImage event2 = new FooterImage("src/icons/footerPulsePro.jpg");
             //writer.setPageEvent(event2);
-// Generate QR code from ID
+            // Generate QR code from ID
             String id = LabelOrdre.getText();  // Make sure LabelOrdre contains the ID
             Image qrCodeImage = generateQRCode(id, 100, 100); // 100x100 pixels
             qrCodeImage.setAlignment(Element.ALIGN_RIGHT); // You can change to ALIGN_LEFT or CENTER
@@ -675,13 +679,92 @@ public class OrdonExamController implements Initializable {
         fillcombox(Arrays.asList("1", "2", "3", "4", "5", "6", "7"), comboQuantiteMedic, "1");
     }
 
-   
-
     @FXML
     private void addNewDiagnostic(MouseEvent event) {
         Stage stage = new Stage();
         loadWindow(this.getClass().getResource("/views/viewNewDiagnostic.fxml"), "Crée un Diagnostic", stage, "no");
     }
+
+    @FXML
+  private void printTicket(ActionEvent event) {
+    try {
+        String id = LabelOrdre.getText();
+        filename = "reports/tickets/Ticket_N" + id + ".pdf";
+        Document doc = new Document(PageSize.A6, 20, 20, 20, 20);
+        PdfWriter.getInstance(doc, new FileOutputStream(filename));
+        doc.open();
+
+        // ====== Fonts ======
+        BaseFont baseFont = BaseFont.createFont("fonts/Roboto.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        Font titleFont = new Font(baseFont, 14, Font.BOLD);
+        Font labelFont = new Font(baseFont, 10, Font.NORMAL);
+        Font valueFont = new Font(baseFont, 10, Font.BOLD);
+        Font footerFont = new Font(baseFont, 8, Font.ITALIC);
+
+        // ====== Clinic Header ======
+        Paragraph clinicName = new Paragraph("Cabinet Médical Dr. " + NomMedecin, titleFont);
+        clinicName.setAlignment(Element.ALIGN_CENTER);
+        doc.add(clinicName);
+
+        Paragraph separator = new Paragraph("------------------------------", labelFont);
+        separator.setAlignment(Element.ALIGN_CENTER);
+        doc.add(separator);
+
+        // ====== Date ======
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy");
+        Date date = inputFormat.parse(DateConsultationDate);
+        String formattedDate = outputFormat.format(date);
+
+        Paragraph datePara = new Paragraph("Date : " + formattedDate, labelFont);
+        datePara.setAlignment(Element.ALIGN_CENTER);
+        doc.add(datePara);
+
+        doc.add(new Paragraph(" ", labelFont)); // Empty line
+
+        // ====== Patient Info ======
+        Paragraph patientPara = new Paragraph();
+        patientPara.add(new Chunk("Nom & Prénom : ", labelFont));
+        patientPara.add(new Chunk(Nom + " " + Prenom, valueFont));
+        doc.add(patientPara);
+
+        doc.add(new Paragraph(" ", labelFont)); // Empty line
+
+        // ====== Price ======
+        ResultSet rs = inst3("consultation", "ID", IDOrdonnace + "");
+        String Prix = null;
+        while (rs.next()) {
+            Prix = rs.getString("Prix");
+        }
+        if (Prix == null) {
+            Prix = "0";
+        }
+
+        Paragraph pricePara = new Paragraph();
+        pricePara.add(new Chunk("Prix Consultation : ", labelFont));
+        pricePara.add(new Chunk(Prix + " DA", valueFont));
+        doc.add(pricePara);
+
+        doc.add(new Paragraph(" ", labelFont));
+
+        // ====== Footer ======
+        doc.add(separator);
+        Paragraph footer = new Paragraph("Merci pour votre visite", footerFont);
+        footer.setAlignment(Element.ALIGN_CENTER);
+        doc.add(footer);
+
+        doc.close();
+
+        Desktop.getDesktop().open(new File(filename));
+
+    } catch (FileNotFoundException | DocumentException ex) {
+        Logger.getLogger(OrdonExamController.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (IOException | ParseException ex) {
+        Logger.getLogger(OrdonExamController.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (SQLException ex) {
+        Logger.getLogger(OrdonExamController.class.getName()).log(Level.SEVERE, null, ex);
+    }
+}
 
 
     private class DeleteButtonCellStock extends TableCell<ObservableList, String> {

@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="PulsePro.jar" size="21478486" download="eager" />
+    <jar href="PulsePro.jar" size="42291239" download="eager" />
     <jar href="lib\com.lowagie.text-2.1.7.jar" size="1782376" download="eager" />
     <jar href="lib\controlsfx-8.40.14.jar" size="1215643" download="eager" />
     <jar href="lib\core-3.5.2.jar" size="609304" download="eager" />

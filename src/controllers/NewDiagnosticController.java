@@ -6,6 +6,7 @@
 package controllers;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXTextArea;
 import com.jfoenix.controls.JFXTextField;
 import static controllers.ConsultationController.IDConsultation;
 import static controllers.FirstWindowPulseProController.Nom;
@@ -48,8 +49,8 @@ public class NewDiagnosticController implements Initializable {
     @FXML
     private JFXTextField txtAge;
     @FXML
-    private TextArea txtDiagnostic;
-
+    private JFXTextArea txtDiagnostic;
+    
     /**
      * Initializes the controller class.
      */

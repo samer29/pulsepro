@@ -878,25 +878,29 @@ public class myConnectionPP {
         }
 
     }
-
-    public static void editCell(String WhereClm, String setClm, String table, String SettedItem, String IDWhere) {
-        passe = 0;
-        try {
-            String query = "UPDATE " + table + " SET "
-                    + setClm + "='" + SettedItem
-                    + "' WHERE  " + WhereClm + "='" + IDWhere + "'";
-            if (cnx == null) {
-                cnx = connecterDB();
-            }
-            st = cnx.createStatement();
-            st.executeUpdate(query);
-            System.out.println(setClm + " bien modifier");
-            passe = 1;
-
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+public static void editCell(String whereClm, String setClm, String table, String settedItem, String idWhere) {
+    passe = 0;
+    try {
+        if (cnx == null) {
+            cnx = connecterDB();
         }
+
+        String query = "UPDATE " + table + " SET " + setClm + " = ? WHERE " + whereClm + " = ?";
+        PreparedStatement pstmt = cnx.prepareStatement(query);
+        pstmt.setString(1, settedItem);
+        pstmt.setString(2, idWhere);
+
+        int rows = pstmt.executeUpdate();
+        if (rows > 0) {
+            System.out.println(setClm + " bien modifié");
+            passe = 1;
+        }
+
+    } catch (SQLException e) {
+        System.out.println("Erreur SQL : " + e.getMessage());
     }
+}
+
 
     public static void readfromfileandinsertintoDb() {
         String filename = "medications.txt";

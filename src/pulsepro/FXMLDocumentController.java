@@ -11,6 +11,7 @@ import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +26,7 @@ import static tools.myConnectionPP.instload2things;
 import static tools.myFunctionsPP.closeStage;
 import static tools.myFunctionsPP.loadfadestage;
 import static tools.myFunctionsPP.minimizeScene;
+import static tools.myFunctionsPP.outpoutstring;
 
 /**
  *
@@ -47,12 +49,13 @@ public class FXMLDocumentController implements Initializable {
     private FontAwesomeIconView minuswindow;
     public static String usernameLG;
     public static String role;
-
+    public static String NomMedecin;
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         txtusername.setText("samer");
         txtpsw.setText("samer");
-
+         final List output = outpoutstring("NomMedecin.dat");
+         NomMedecin = String.join(",", output);
     }
 
     @FXML

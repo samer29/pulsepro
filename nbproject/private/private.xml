@@ -5,7 +5,10 @@
         <group>
             <file>file:/C:/Users/samer/Documents/NetBeansProjects/PulsePro/src/css/pulseProtheme.css</file>
             <file>file:/C:/Users/samer/Documents/NetBeansProjects/PulsePro/src/css/pulseProthemeDARK.css</file>
+            <file>file:/C:/Users/samer/Documents/NetBeansProjects/PulsePro/src/pulsepro/PulsePro.java</file>
+            <file>file:/C:/Users/samer/Documents/NetBeansProjects/PulsePro/src/controllers/ComptabliteController.java</file>
             <file>file:/C:/Users/samer/Documents/NetBeansProjects/PulsePro/src/controllers/ConsultationController.java</file>
+            <file>file:/C:/Users/samer/Documents/NetBeansProjects/PulsePro/src/views/viewComptablite.fxml</file>
             <file>file:/C:/Users/samer/Documents/NetBeansProjects/PulsePro/src/pulsepro/FXMLDocumentController.java</file>
             <file>file:/C:/Users/samer/Documents/NetBeansProjects/PulsePro/src/controllers/ServerController.java</file>
             <file>file:/C:/Users/samer/Documents/NetBeansProjects/PulsePro/src/tools/myConnectionPP.java</file>

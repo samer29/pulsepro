@@ -9,7 +9,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -24,11 +23,7 @@
          <children>
             <VBox alignment="CENTER" layoutX="40.0" layoutY="80.0" maxWidth="171.0" prefHeight="559.0" prefWidth="171.0" styleClass="hbox" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="60.0">
                <children>
-                  <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../icons/logo.png" />
-                     </image>
-                  </ImageView>
+                  <ImageView fx:id="imgLogo" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
                   <JFXButton fx:id="btnPatient" onAction="#OnPatientsClicked" prefWidth="130.0" text="Patients">
                      <VBox.margin>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -60,6 +55,14 @@
                      <graphic>
                         <FontAwesomeIconView glyphName="COGS" size="20" />
                      </graphic>
+                  </JFXButton>
+                  <JFXButton fx:id="btnComptab" layoutX="32.0" layoutY="401.0" onAction="#compta" prefWidth="130.0" text="Comptablité">
+                     <graphic>
+                        <FontAwesomeIconView glyphName="MONEY" size="20" />
+                     </graphic>
+                     <VBox.margin>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                     </VBox.margin>
                   </JFXButton>
                   <JFXButton fx:id="bntAbout" layoutX="47.0" layoutY="374.0" onAction="#onAboutUsClicked" prefWidth="130.0" text="A Propos !">
                      <graphic>

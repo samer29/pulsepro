@@ -55,12 +55,18 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.effect.Blend;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.effect.ColorInput;
+import javafx.scene.image.ImageView;
 
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -179,7 +185,7 @@ public class FirstWindowPulseProController implements Initializable {
     private static final String FACEBOOK = "https://www.facebook.com/samer.elouissi";
     private static final String GITHUB = "https://github.com/samer29";
     @FXML
-    private TableView<?> TableConsultation;
+    private TableView TableConsultation;
     @FXML
     private TableColumn clmIDConsultation;
     @FXML
@@ -208,7 +214,11 @@ public class FirstWindowPulseProController implements Initializable {
     @FXML
     private TableColumn clmPrintCodeQr;
     @FXML
-    private TableColumn<?, ?> clmDetailsConsultation;
+    private TableColumn clmDetailsConsultation;
+    @FXML
+    private JFXButton btnComptab;
+    @FXML
+    private ImageView imgLogo;
 
     /**
      * Initializes the controller class.
@@ -218,7 +228,7 @@ public class FirstWindowPulseProController implements Initializable {
         Timeline refreshTimeline = new Timeline(
                 new KeyFrame(Duration.minutes(3), event -> fillDataPatients())
         );
-        
+
         refreshTimeline.setCycleCount(Animation.INDEFINITE);
         refreshTimeline.play();
 
@@ -266,25 +276,47 @@ public class FirstWindowPulseProController implements Initializable {
             btnEditConsultation.setDisable(false);
             btnOrdonance.setDisable(false);
             btnSettings.setDisable(false);
+            btnComptab.setDisable(false);
         }
         if ("assistante".equals(role)) {
             btnConsultation.setDisable(true);
             btnEditConsultation.setDisable(true);
             btnOrdonance.setDisable(true);
             btnSettings.setDisable(true);
+            btnComptab.setDisable(true);
         }
     }
 
     public void SetTheme() {
         LocalStorage storage = new LocalStorage();
-
-        String theme = storage.getData("mode", "daymode");
-        if (theme.equals("daymode")) {
+        theme = storage.getData("mode", "daymode");
+        if ("daymode".equals(theme)) {
             rootStackPane.getStylesheets().remove("/css/pulseProthemeDARK.css");
             rootStackPane.getStylesheets().add("/css/pulseProtheme.css");
+
+            // Reload image fresh
+            imgLogo.setImage(new javafx.scene.image.Image(
+                    getClass().getResource("/icons/logo.png").toExternalForm()
+            ));
+            imgLogo.setEffect(null); // Remove any tint
+
         } else {
             rootStackPane.getStylesheets().remove("/css/pulseProtheme.css");
             rootStackPane.getStylesheets().add("/css/pulseProthemeDARK.css");
+
+            // Reload image fresh
+            imgLogo.setImage(new javafx.scene.image.Image(
+                    getClass().getResource("/icons/logo.png").toExternalForm()
+            ));
+
+            // Apply white tint
+            ColorAdjust colorAdjust = new ColorAdjust();
+            colorAdjust.setBrightness(1.0);
+            colorAdjust.setSaturation(-1.0);
+
+            imgLogo.setEffect(colorAdjust);
+         
+            
         }
     }
 
@@ -654,6 +686,10 @@ public class FirstWindowPulseProController implements Initializable {
         }
         System.out.println("Nom: " + Nom + " Prenom: " + Prenom + " Age: " + age + " Sexe: " + Sexe + "DateConsultation " + DateConsultationDate);
         loadWindow(this.getClass().getResource("/views/viewOrdonExam.fxml"), "Crée une Ordonnance ", stage, "no");
+    }
+
+    @FXML
+    private void compta(ActionEvent event) {
     }
 
     private class DeleteButtonCellPatient extends TableCell<ObservableList, String> {
